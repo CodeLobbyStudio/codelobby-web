@@ -58,23 +58,45 @@ Testing Library. Dependencies are pinned in `package.json` and `package-lock.jso
 | `npm run lint`         | ESLint; warnings fail the check                                 |
 | `npm run format`       | Format source and documentation                                 |
 | `npm run format:check` | Check formatting without edits                                  |
-| `npm test`             | Run routing smoke tests once                                    |
+| `npm test`             | Run routing, component and API configuration tests once         |
 | `npm run test:watch`   | Run tests in watch mode                                         |
 
 Run build, lint, format check and tests before opening a PR. Generated output,
 dependencies and local environment files are excluded from Git.
 
+### Continuous integration
+
+`.github/workflows/ci.yml` runs on pull requests targeting `main` and pushes to
+`main`. It uses Node from `.nvmrc` and runs `npm ci`, build, lint, formatting checks
+and tests on Ubuntu. No running backend, database or repository secrets are needed.
+The workflow only needs read access to repository contents.
+
+Failed checks are visible on the PR. Enforcing successful checks before merging
+requires a repository ruleset or branch protection configured by a maintainer.
+
 ## Routes and current scope
 
-The bootstrap implements `/` and client-side navigation to `/login`, `/register`
-and `/profile`, plus a 404 page for unknown routes. These three destination pages
-are explicit placeholders: no forms, session, user data or API requests are
-implemented yet. `/profile` will receive authentication protection in the session
-issue. The application can run without the backend at this stage.
+The application has a responsive landing page, a shared header/footer, a public
+layout for `/login` and `/register`, an account layout for `/profile`, and a 404
+page. Route changes update the document title and move keyboard focus to the
+main content. A render error boundary keeps navigation available and provides a
+safe fallback with retry.
 
-Full layout and reusable UI components follow in web #4, registration/login in
-web #16, and API client/session/profile in web #17. Bootstrap work tracks
-[web #3](https://github.com/CodeLobbyStudio/codelobby-web/issues/3).
+Login, registration and profile content remain explicit placeholders: no forms,
+session, user data or API requests are implemented yet. The account layout is
+presentation only; `/profile` receives authentication protection in web #17.
+The application runs without the backend.
+
+Shared UI components include Button (disabled/loading), FormField (native input,
+label, hint and validation feedback), Alert, LoadingIndicator, EmptyState and
+ErrorState. Form controls are prepared for web #16 and are tested without adding
+nonfunctional forms to the public interface. Alerts announce dynamic content only
+when the caller explicitly opts in with `announce`; static notices do not interrupt
+screen readers. ErrorState uses safe copy rather than raw exception messages.
+
+Bootstrap work tracks [web #3](https://github.com/CodeLobbyStudio/codelobby-web/issues/3);
+layout/components track [web #4](https://github.com/CodeLobbyStudio/codelobby-web/issues/4).
+Registration/login follows in web #16, and API client/session/profile in web #17.
 
 ## API configuration
 
