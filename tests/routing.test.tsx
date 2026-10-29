@@ -12,96 +12,90 @@ function renderRoute(path: string) {
   );
 }
 
-describe('application routing', () => {
-  it('opens the home page and navigates to login, registration and profile', async () => {
-    const user = userEvent.setup();
+describe('static landing foundation', () => {
+  it('renders the main sections and a noninteractive illustration', () => {
     renderRoute('/');
     expect(
-      screen.getByRole('heading', {
-        level: 1,
-        name: 'Jedno lobby. Wiele rozwiązań.',
-      }),
-    ).toBeInTheDocument();
-
-    for (const name of ['Logowanie', 'Rejestracja', 'Profil']) {
-      const navigation = within(
-        screen.getByRole('navigation', { name: 'Nawigacja główna' }),
-      );
-      await user.click(navigation.getByRole('link', { name }));
-      expect(
-        screen.getByRole('heading', { level: 1, name }),
-      ).toBeInTheDocument();
-      expect(navigation.getByRole('link', { name })).toHaveAttribute(
-        'aria-current',
-        'page',
-      );
-      expect(document.title).toBe(`${name} — CodeLobby`);
-      expect(screen.getByRole('main')).toHaveFocus();
-    }
-  });
-
-  it('keeps future task and lobby routes unavailable', () => {
-    renderRoute('/tasks');
-    expect(
-      screen.getByRole('heading', { name: 'Nie znaleziono strony' }),
+      screen.getByRole('heading', { name: 'Koduj. Rywalizuj. Rozwijaj się.' }),
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole('link', { name: 'Zadania' }),
+      screen.getByRole('region', { name: 'Możliwości CodeLobby' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('list', { name: 'Etapy pracy w CodeLobby' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('img', { name: /Ilustracja planowanego lobby/ }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.queryByRole('tab')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: /Powiększ/ }),
     ).not.toBeInTheDocument();
   });
 
-  it('does not request API data while navigating through presentation-only pages', async () => {
+  it('keeps every visible landing control disabled without navigation or requests', async () => {
     const fetchSpy = vi.spyOn(globalThis, 'fetch');
     try {
       const user = userEvent.setup();
       renderRoute('/');
-      for (const name of ['Logowanie', 'Rejestracja', 'Profil']) {
-        await user.click(
-          within(
-            screen.getByRole('navigation', { name: 'Nawigacja główna' }),
-          ).getByRole('link', { name }),
-        );
+      for (const button of screen.getAllByRole('button')) {
+        expect(button).toBeDisabled();
+        await user.click(button);
       }
+      expect(
+        screen.getByRole('heading', { name: /Koduj/, level: 1 }),
+      ).toBeInTheDocument();
+      expect(screen.queryByRole('status')).not.toBeInTheDocument();
       expect(fetchSpy).not.toHaveBeenCalled();
+      const links = screen.getAllByRole('link');
+      expect(links).toHaveLength(1);
+      expect(links[0]).toHaveAttribute('href', '#main');
     } finally {
       fetchSpy.mockRestore();
     }
   });
 
-  it('makes the account placeholder explicit without displaying user data', () => {
-    renderRoute('/profile');
-    expect(screen.getByText('Podgląd części konta')).toBeInTheDocument();
-    expect(
-      screen.getByRole('navigation', { name: 'Nawigacja konta' }),
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByRole('button', { name: 'Wyloguj' }),
-    ).not.toBeInTheDocument();
+  it('provides static navigation labels and account-entry controls', () => {
+    renderRoute('/');
+    const nav = within(
+      screen.getByRole('navigation', { name: 'Nawigacja główna' }),
+    );
+    for (const name of ['Zadania', 'Lobby', 'Ranking', 'Dla prowadzących']) {
+      expect(nav.getByRole('button', { name })).toBeDisabled();
+    }
+    for (const name of ['Zaloguj się', 'Załóż konto']) {
+      expect(screen.getByRole('button', { name })).toBeDisabled();
+    }
   });
+});
 
+describe('existing route skeleton', () => {
   it.each([
     ['/login', 'Logowanie'],
     ['/register', 'Rejestracja'],
     ['/profile', 'Profil'],
-  ])('opens %s directly', (path, title) => {
-    renderRoute(path);
-    expect(
-      screen.getByRole('heading', { level: 1, name: title }),
-    ).toBeInTheDocument();
-    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
-  });
-
-  it('shows 404 for unknown URLs and lets the user return home', async () => {
-    const user = userEvent.setup();
-    renderRoute('/nie-ma-takiej-strony');
+  ])(
+    'retains the direct %s placeholder from the routing skeleton',
+    (path, title) => {
+      renderRoute(path);
+      expect(
+        screen.getByRole('heading', { name: title, level: 1 }),
+      ).toBeInTheDocument();
+      expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+      expect(document.title).toBe(`${title} — CodeLobby`);
+    },
+  );
+  it('retains the 404 fallback and recovery', async () => {
+    renderRoute('/unknown');
     expect(
       screen.getByRole('heading', { name: 'Nie znaleziono strony' }),
     ).toBeInTheDocument();
-    await user.click(
-      screen.getByRole('link', { name: 'Wróć na stronę główną' }),
-    );
+    await userEvent
+      .setup()
+      .click(screen.getByRole('link', { name: 'Wróć na stronę główną' }));
     expect(
-      screen.getByRole('heading', { name: 'Jedno lobby. Wiele rozwiązań.' }),
+      screen.getByRole('heading', { name: /Koduj/, level: 1 }),
     ).toBeInTheDocument();
   });
 });

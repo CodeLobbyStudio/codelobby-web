@@ -5,20 +5,6 @@ export function AuthPlaceholderPage({ mode }: { mode: 'login' | 'register' }) {
   const isLogin = mode === 'login';
   return (
     <section className="auth-layout content-width">
-      <div className="auth-intro">
-        <p className="eyebrow">CodeLobby / konto</p>
-        <p className="auth-intro-heading">
-          Każde rozwiązanie <br />
-          zaczyna się od pomysłu.
-        </p>
-        <p>
-          Twoja przestrzeń do nauki, eksperymentowania i wspólnej pracy nad
-          kodem.
-        </p>
-        <Link className="text-link" to="/">
-          ← Wróć na stronę główną
-        </Link>
-      </div>
       <div className="auth-panel">
         <p className="eyebrow">W przygotowaniu</p>
         <h1>{isLogin ? 'Logowanie' : 'Rejestracja'}</h1>
@@ -39,6 +25,9 @@ export function AuthPlaceholderPage({ mode }: { mode: 'login' | 'register' }) {
             {isLogin ? 'Przejdź do rejestracji' : 'Przejdź do logowania'}
           </Link>
         </p>
+        <Link className="text-link auth-home-link" to="/">
+          ← Wróć na stronę główną
+        </Link>
       </div>
     </section>
   );

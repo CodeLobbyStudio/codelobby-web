@@ -18,10 +18,12 @@ Na start dzielimy frontend głównie po funkcjach, a nie po typie pliku.
 - `src/app/App.tsx` — deklaracje tras i składanie layoutów; treść ekranów znajduje się w osobnych plikach.
 - `src/app/layouts/` — SiteShell (nagłówek, main, stopka), PublicLayout i AccountLayout. Layout konta nie zastępuje autoryzacji z #17.
 - `src/app/pages/` — landing, informacyjne ekrany logowania/rejestracji, profil i 404. Domena auth/profilu zostanie dodana w kolejnych ticketach do modułów funkcjonalnych.
+- `src/app/components/` — statyczna ilustracja edytora (EditorIllustration) i neonowy symbol kodu SVG (NeonCode), przygotowane według referencji zespołu. Nie są działającym lobby ani edytorem.
 - `src/app/RouteEffects.tsx` — tytuł strony, focus i przewijanie po zmianie ścieżki.
 - `src/app/ErrorBoundary.tsx` — bezpieczny fallback błędów renderowania. Zmiana ścieżki resetuje błąd; nawigacja pozostaje poza granicą błędu.
 - `src/app/styles.css` — zmienne kolorów i style layoutów oraz komponentów, breakpointy mobile/desktop i reduced motion.
 - `src/shared/components/` — Button, FormField, Alert, LoadingIndicator, EmptyState, ErrorState. Komponenty przyjmują propsy i akcje, bez zależności od API i modułów domenowych.
+- `src/shared/components/Icon.tsx` — współdzielone ikony SVG używane przez nawigację, stopkę i landing.
 - `src/shared/api/config.ts` — publiczny base URL API z konfiguracji Vite; klient HTTP powstanie w web #17.
 - `tests/routing.test.tsx` — testy nawigacji, bezpośredniego wejścia na trasy i powrotu z 404.
 - `tests/components.test.tsx` — zachowania przycisków/pól, dostępne komunikaty i stany oraz odzyskiwanie widoku po błędzie renderowania.
@@ -32,3 +34,9 @@ Na start dzielimy frontend głównie po funkcjach, a nie po typie pliku.
 - `.github/workflows/ci.yml` — instalacja, build, lint, formatowanie i testy dla PR do main i push do main.
 
 Katalogi funkcjonalne pozostają na swoich miejscach. Kod domenowy dokładamy do odpowiedniej funkcji, gdy realizujemy jej ticket. Nie dodajemy atrap API ani danych użytkownika w szkielecie.
+
+Aktualne założenia wizualne i szczegóły ze screenów zespołu opisuje `TEAM-DESIGN.md`.
+Ilustracja edytora jest opisana jako obraz. ProblemPreview wyświetla statyczny
+opis zadania. Na tym etapie nie ma modala, przełączania zakładek ani wykonywania
+kodu. Nawigacja i akcje landingu pozostają nieaktywne; interaktywność jest
+planowana jako kolejny przyrost prac.

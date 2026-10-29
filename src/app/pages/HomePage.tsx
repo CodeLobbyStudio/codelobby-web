@@ -1,131 +1,136 @@
-import { Link } from 'react-router-dom';
+import { Button } from '../../shared/components/Button';
+import { Icon } from '../../shared/components/Icon';
+import { EditorIllustration } from '../components/EditorIllustration';
+import { NeonCode } from '../components/NeonCode';
 
 export function HomePage() {
   return (
     <>
-      <section className="hero content-width" aria-labelledby="home-title">
-        <div className="hero-copy">
-          <p className="eyebrow">
-            <span className="status-dot" aria-hidden="true" />
-            Wspólne sesje programowania
-          </p>
-          <h1 id="home-title">
-            Jedno lobby. <br />
-            <span>Wiele rozwiązań.</span>
-          </h1>
-          <p className="hero-description">
-            Uczcie się od siebie, rozwiązując zadania razem. Wspólna przestrzeń
-            na laboratoria, warsztaty i kolejną dobrą myśl w kodzie.
-          </p>
-          <div className="actions">
-            <Link className="button button--primary" to="/register">
-              Przejdź do rejestracji <span aria-hidden="true">↗</span>
-            </Link>
-            <Link className="text-link" to="/login">
-              Przejdź do logowania <span aria-hidden="true">→</span>
-            </Link>
-          </div>
-          <p className="hero-note">
-            Aplikacja jest w przygotowaniu. Konta i sesje będą dostępne w
-            kolejnych etapach.
-          </p>
-        </div>
-        <div className="hero-visual" aria-hidden="true">
-          <div className="code-sheet">
-            <div className="code-sheet-header">
-              <span className="code-dots">● ● ●</span>
-              <span>miejsce na Twój pomysł</span>
-            </div>
-            <div className="code-sheet-body">
-              <div>
-                <span className="line-number">01</span>
-                <span className="code-comment">
-                  // Od pomysłu do rozwiązania.
-                </span>
-              </div>
-              <div>
-                <span className="line-number">02</span>
-              </div>
-              <div>
-                <span className="line-number">03</span>
-                <span className="code-keyword">while</span> (learning) {'{'}
-              </div>
-              <div>
-                <span className="line-number">04</span> explore();
-              </div>
-              <div>
-                <span className="line-number">05</span> share();
-              </div>
-              <div>
-                <span className="line-number">06</span> improve();
-              </div>
-              <div>
-                <span className="line-number">07</span>
-                {'}'}
-              </div>
-            </div>
-            <div className="code-sheet-footer">
-              <span className="status-dot" />
-              Każdy pomysł ma swój początek.
+      <section className="hero-stage glow-divider">
+        <div className="hero content-width" aria-labelledby="home-title">
+          <div className="hero-copy">
+            <p className="eyebrow">Live coding dla uczelni</p>
+            <h1 id="home-title">
+              Koduj. <br />
+              Rywalizuj. <br />
+              <span>Rozwijaj się.</span>
+            </h1>
+            <p className="hero-description">
+              CodeLobby to platforma do uczelnianych sesji kodowania na żywo.
+            </p>
+            <div className="actions">
+              <Button disabled>
+                Utwórz lobby <span aria-hidden="true">→</span>
+              </Button>
+              <Button variant="secondary" disabled>
+                Dołącz kodem
+              </Button>
             </div>
           </div>
-          <span className="visual-caption">RÓŻNE PODEJŚCIA. WSPÓLNY CEL.</span>
+          <EditorIllustration />
         </div>
       </section>
       <section
-        className="intro-section content-width"
-        aria-labelledby="intro-title"
+        className="features content-width"
+        id="funkcje"
+        tabIndex={-1}
+        aria-label="Możliwości CodeLobby"
       >
-        <div className="section-intro">
-          <p className="eyebrow">Prosta idea</p>
-          <h2 id="intro-title">
-            Razem łatwiej <br />
-            znaleźć rozwiązanie.
-          </h2>
+        <article>
+          <h2>Live coding</h2>
           <p>
-            CodeLobby powstaje z myślą o nauce przez praktykę — od pierwszej
-            linijki po wspólną analizę rozwiązania.
+            Twórz lobby, rozwiązuj zadania i rywalizuj w czasie rzeczywistym.
           </p>
-        </div>
-        <ol className="steps">
-          <li>
-            <span className="step-number">01</span>
-            <div>
-              <h3>Jedna przestrzeń</h3>
-              <p>
-                Host przygotowuje lobby i zadania. Uczestnicy dołączają do
-                konkretnej sesji.
-              </p>
-            </div>
-          </li>
-          <li>
-            <span className="step-number">02</span>
-            <div>
-              <h3>Własne podejście</h3>
-              <p>
-                Każdy pracuje nad swoim rozwiązaniem w edytorze przeglądarkowym.
-              </p>
-            </div>
-          </li>
-          <li>
-            <span className="step-number">03</span>
-            <div>
-              <h3>Informacja zwrotna</h3>
-              <p>
-                Docelowo testy i wyniki pomogą sprawdzić kod i zrobić następny
-                krok.
-              </p>
-            </div>
-          </li>
-        </ol>
+        </article>
+        <article>
+          <h2>Automatyczne testy</h2>
+          <p>
+            Natychmiastowa weryfikacja rozwiązań na jawnych i ukrytych testach.
+          </p>
+        </article>
+        <article id="ranking">
+          <h2>Ranking rozwiązań</h2>
+          <p>
+            Sprawdź, jak wypadasz na tle innych pod względem wydajności i
+            jakości kodu.
+          </p>
+        </article>
       </section>
-      <div className="content-width development-note">
-        <span aria-hidden="true">↳</span>
-        <p>
-          Host i Uczestnik to role w danym lobby. Jedno konto może pełnić różne
-          role w różnych sesjach.
-        </p>
-      </div>
+      <section
+        className="how-section glow-divider"
+        id="jak-to-dziala"
+        tabIndex={-1}
+        aria-labelledby="how-title"
+      >
+        <div className="content-width">
+          <div className="section-heading">
+            <p className="eyebrow">Jak to działa</p>
+            <h2 id="how-title">
+              Od lobby do wyników <br />w kilku krokach
+            </h2>
+          </div>
+          <ol className="workflow-grid" aria-label="Etapy pracy w CodeLobby">
+            <li className="workflow-card workflow-lobby">
+              <span className="step-number" aria-hidden="true">
+                01
+              </span>
+              <Icon name="users" />
+              <h3>Utwórz lobby</h3>
+              <p>Wybierz zadanie, ustaw czas i zaproś uczestników.</p>
+            </li>
+            <li className="workflow-card workflow-code">
+              <span className="step-number" aria-hidden="true">
+                02
+              </span>
+              <Icon name="code" />
+              <h3>Koduj w przeglądarce</h3>
+              <p>Pisz i uruchamiaj kod w wybranym języku bez instalacji.</p>
+            </li>
+            <li className="workflow-card workflow-tests">
+              <span className="step-number" aria-hidden="true">
+                03
+              </span>
+              <Icon name="file" />
+              <h3>Automatyczne testy</h3>
+              <p>
+                Twoje rozwiązanie jest natychmiast sprawdzane na wielu testach.
+              </p>
+            </li>
+            <li className="workflow-card workflow-results">
+              <span className="step-number" aria-hidden="true">
+                04
+              </span>
+              <Icon name="chart" />
+              <h3>Zobacz wyniki</h3>
+              <p>Porównaj czas, poprawność i jakość kodu w rankingu lobby.</p>
+            </li>
+          </ol>
+        </div>
+      </section>
+      <section
+        className="teacher-section glow-divider"
+        id="dla-prowadzacych"
+        tabIndex={-1}
+        aria-labelledby="teacher-title"
+      >
+        <div className="teacher-layout content-width">
+          <div className="teacher-copy">
+            <p className="eyebrow">Dla prowadzących</p>
+            <h2 id="teacher-title">
+              Pełna kontrola <br />
+              <span>nad zajęciami</span>
+            </h2>
+            <p>
+              Twórz zadania, zarządzaj uczestnikami i śledź postępy w czasie
+              rzeczywistym. Idealne do ćwiczeń, kolokwiów i konkursów.
+            </p>
+            <Button disabled>
+              Dowiedz się więcej <span aria-hidden="true">→</span>
+            </Button>
+          </div>
+          <NeonCode />
+        </div>
+      </section>
     </>
   );
 }
