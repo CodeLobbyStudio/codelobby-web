@@ -1,25 +1,8 @@
 import { useId, useState } from 'react';
 import { Icon } from '../../shared/components/Icon';
+import { demoCases as cases } from './lobbyDemo';
 
 const tabs = ['Opis', 'Przykłady', 'Testy'];
-const cases = [
-  {
-    input: '[1, 2, 3, 1, 2]',
-    output: 3,
-    detail: 'Najdłuższy spójny fragment rosnący to [1, 2, 3].',
-  },
-  {
-    input: '[5, 4, 3, 2]',
-    output: 1,
-    detail:
-      'Każda kolejna liczba jest mniejsza. Pojedynczy element ma długość 1.',
-  },
-  {
-    input: '[2, 2, 3, 4, 1]',
-    output: 3,
-    detail: 'Równe liczby przerywają wzrost. Najdłuższy fragment to [2, 3, 4].',
-  },
-];
 
 export function ProblemPreview({
   interactive = false,

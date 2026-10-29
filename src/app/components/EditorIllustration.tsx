@@ -1,25 +1,11 @@
 import { useRef } from 'react';
 import { Icon } from '../../shared/components/Icon';
 import { ProblemPreview } from './ProblemPreview';
-
-const source = [
-  'def najdluzszy_podciag(arr):',
-  '    if not arr:',
-  '        return 0',
-  '',
-  '    best = 1',
-  '    current = 1',
-  '',
-  '    for i in range(1, len(arr)):',
-  '        if arr[i] > arr[i - 1]:',
-  '            current += 1',
-  '        else:',
-  '            best = max(best, current)',
-  '            current = 1',
-  '',
-  '    return max(best, current)',
-];
-const testDurations = [0, 8, 16, 94];
+import {
+  demoSource as source,
+  demoTestDurations as testDurations,
+  demoRanking as ranking,
+} from './lobbyDemo';
 const inactiveControlHint = 'Dostępne w aktywnym lobby.';
 const people = [
   'Ty',
@@ -47,13 +33,6 @@ const participantStates = {
   working: { label: 'W trakcie', color: '#ffa343' },
   idle: { label: 'Nie rozpoczęto', color: '#94a3b0' },
 };
-const ranking = [
-  ['PawełBM', '100', '52 ms'],
-  ['Kaczan', '100', '67 ms'],
-  ['Ty', '100', `${testDurations.reduce((sum, time) => sum + time, 0)} ms`],
-  ['Oliwka', '100', '181 ms'],
-  ['Simon', '75', '60 ms'],
-];
 
 function highlight(line: string) {
   return line

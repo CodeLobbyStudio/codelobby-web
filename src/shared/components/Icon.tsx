@@ -1,6 +1,9 @@
 import type { ReactNode } from 'react';
 
 const shapes: Record<string, ReactNode> = {
+  trophy: (
+    <path d="M7 3h10v6a5 5 0 0 1-10 0V3Zm0 2H3v3a4 4 0 0 0 4 4m10-7h4v3a4 4 0 0 1-4 4M12 14v5m-4 2h8m-6-2h4" />
+  ),
   arrowLeft: <path d="M19 12H5m6-6-6 6 6 6" />,
   arrowRight: <path d="M5 12h14m-6-6 6 6-6 6" />,
   zoom: (

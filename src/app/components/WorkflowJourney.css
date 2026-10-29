@@ -1,0 +1,322 @@
+.journey {
+  position: relative;
+}
+.journey-heading {
+  max-width: 36rem;
+  margin-bottom: 32px;
+}
+.journey-heading .eyebrow {
+  margin-bottom: 14px;
+}
+.journey-heading h2 {
+  font-size: clamp(1.875rem, 2.8vw, 2.25rem);
+  letter-spacing: -0.04em;
+  line-height: 1.15;
+  margin-bottom: 0;
+}
+.journey-grid {
+  display: grid;
+  gap: 16px;
+  list-style: none;
+  padding: 0 0 0 22px;
+  margin: 0;
+  position: relative;
+}
+.journey-grid::before {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: #ffa34355;
+}
+.journey-step {
+  --indent: 0px;
+  --step-index: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin-left: var(--indent);
+  padding: 20px 18px;
+  border: 1px solid #2b3c48;
+  border-radius: 12px;
+  background: #0d1920;
+}
+.journey-step--code {
+  --indent: 8px;
+  --step-index: 1;
+}
+.journey-step--tests {
+  --indent: 16px;
+  --step-index: 2;
+}
+.journey-step--results {
+  --indent: 24px;
+  --step-index: 3;
+  border-color: #e5a35e;
+  background: linear-gradient(155deg, #ffa3431a, transparent 65%), #0d1920;
+  box-shadow:
+    0 0 22px #ffa34318,
+    inset 0 0 18px #ffa34308;
+}
+.journey-step::before {
+  content: '';
+  position: absolute;
+  left: calc(-22px - var(--indent));
+  top: 26px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.journey-number {
+  position: absolute;
+  top: 22px;
+  right: 18px;
+  color: #9cabb6;
+  font:
+    500 0.8125rem/1.5 Consolas,
+    monospace;
+}
+.journey-step--results .journey-number {
+  color: var(--accent);
+}
+.journey-step > .icon {
+  flex-shrink: 0;
+  color: var(--accent);
+  width: 28px;
+  height: 28px;
+  margin-bottom: 14px;
+}
+.journey-step h3 {
+  flex-shrink: 0;
+  font-size: 1.1875rem;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+.journey-step > p {
+  flex-shrink: 0;
+  color: #c0cad3;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  margin-bottom: 0;
+}
+.journey-code-chip {
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px dashed #3f5260;
+  border-radius: 6px;
+}
+.journey-code-chip code {
+  color: #ffc17d;
+  font-size: 1.125rem;
+  letter-spacing: 0.12em;
+}
+.journey-code-chip > span {
+  display: block;
+  color: #b9c8d2;
+  font-size: 0.8125rem;
+  margin-bottom: 4px;
+}
+.journey-code-example {
+  margin-top: 16px;
+  border: 1px solid #243741;
+  border-radius: 6px;
+  background: #08131a;
+  overflow: hidden;
+}
+.journey-code-example > span {
+  display: block;
+  padding: 8px 10px;
+  border-bottom: 1px solid #243741;
+  color: #aebfca;
+  font-size: 0.75rem;
+}
+.journey-code-example pre {
+  margin: 0;
+  padding: 6px 10px;
+  color: #ffb16a;
+  font:
+    0.75rem/1.5 Consolas,
+    monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.journey-test-example {
+  margin-top: 22px;
+  padding-top: 12px;
+  border-top: 1px solid #243741;
+}
+.journey-test-heading {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 0.75rem;
+  color: #b3c2cc;
+}
+.journey-test-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 0.8125rem;
+  color: #c0cad3;
+}
+.journey-test-row code {
+  font:
+    0.75rem/1.5 Consolas,
+    monospace;
+  color: #d3e0e9;
+}
+.journey-test-row .icon {
+  width: 14px;
+  height: 14px;
+  color: #35da86;
+}
+.journey-case-result {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: #35da8612;
+  color: #72e1a5;
+}
+.journey-test-summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: #64d99a;
+}
+.journey-test-summary .icon {
+  width: 14px;
+  height: 14px;
+}
+.journey-visual {
+  flex-shrink: 0;
+}
+.journey-podium {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+  align-items: end;
+  height: 200px;
+  margin-top: 18px;
+}
+.journey-podium > span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: 1px solid #ffa34344;
+  background: #ffa3430d;
+  border-radius: 4px 4px 0 0;
+}
+.journey-podium b {
+  color: #bca994;
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+.journey-podium small {
+  color: #e0c8ad;
+  font-size: 0.8125rem;
+}
+.journey-podium .podium-first small {
+  color: #ffe0b0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+.journey-podium .podium-first b {
+  color: #ffd28d;
+}
+.journey-podium .podium-first {
+  height: 88%;
+  background: linear-gradient(180deg, #ffa34340, #ff8b1826);
+  border-color: #ffac45;
+  box-shadow: 0 0 14px #ffa34314;
+}
+.podium-first > .icon {
+  width: 24px;
+  height: 24px;
+  color: #ffd28d;
+  margin-bottom: 6px;
+}
+.podium-second {
+  height: 64%;
+}
+.podium-third {
+  height: 46%;
+}
+.journey-finish-label {
+  display: block;
+  margin-top: 18px;
+  color: #ffd09b;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.journey-closing {
+  margin: 32px 0 0;
+  text-align: center;
+  font-family: 'Space Grotesk Variable', sans-serif;
+  font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.025em;
+  color: #e0e6eb;
+}
+.journey-closing span {
+  color: #ffc17d;
+}
+@media (min-width: 80rem) {
+  .journey-heading {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: calc(50% - 24px);
+    margin: 0;
+  }
+  .journey-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: end;
+    gap: 18px;
+    padding: 0;
+  }
+  .journey-grid::before,
+  .journey-step::before {
+    display: none;
+  }
+  .journey-step {
+    margin: 0;
+    height: calc(16rem + var(--step-index) * 4rem);
+  }
+  .journey-step--results {
+    display: flex;
+    flex-direction: column;
+  }
+  .journey-step--results > :not(.journey-podium) {
+    flex-shrink: 0;
+  }
+  .journey-step .journey-visual {
+    margin-top: auto;
+  }
+}
+@media (max-width: 24rem) {
+  .journey-step {
+    padding: 20px 12px;
+  }
+  .journey-number {
+    right: 12px;
+  }
+  .journey-code-example pre {
+    font-size: 0.75rem;
+    padding-inline: 8px;
+  }
+}

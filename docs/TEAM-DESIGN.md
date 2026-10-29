@@ -5,6 +5,62 @@ zielony kierunek wizualny. Nie publikować zmian ani PR bez wyraźnej zgody uży
 
 ## Kompozycja
 
+### Dopracowanie wizualne po PR #22 (lokalnie, do odbioru)
+
+- Referencja ruchu: Logo Hero na https://shaders.com/; efekt realizujemy na własnym
+  SVG i CSS, bez nowej biblioteki lub zależności od zewnętrznej usługi.
+- Neon w sekcji prowadzących podąża za kursorem z łagodnym wygaszaniem ruchu.
+  W dotyku nie śledzi kursora; pulsowanie poświaty trwa 5,5 sekundy, a kolory
+  płynnie krążą między pomarańczem, czerwienią i różem w cyklu 12 sekund,
+  bez szybkich błysków. Użytkownik wyraźnie zatwierdził tę delikatną animację
+  także przy systemowym ograniczeniu ruchu, analogicznie do nawigacji sekcji.
+  Cały obrys używa ciągłego animowanego gradientu, bez przerywanej nakładki,
+  która kończyła przebieg przed domknięciem wszystkich trzech części symbolu.
+- Mały podgląd ma delikatne nachylenie 2D (-1,2 stopnia), bez perspektywy
+  i obrotu w osi Y. Zastępuje wcześniejszą wersję 3D na życzenie użytkownika,
+  żeby ograniczyć artefakty krawędzi przy zachowaniu lekkiego nachylenia.
+  Rozwinięty podgląd nadal pozostaje płaski i czytelny.
+  W małym rankingu wiersz „Ty” ponownie ma pomarańczowe tło i kreskę po lewej
+  od indeksu, bez jasnej obwódki. Kreska w małym rankingu jest osobnym
+  pseudoelementem pierwszej komórki, tak jak w uczestnikach, i nie przesuwa
+  kolumn. Po przejściu na obrót 2D tło jest zwykłym
+  wypełnieniem wiersza, bez osobnej rozmytej warstwy wystającej po prawej.
+  „Ty” jest na pierwszym miejscu (100 punktów, 52 ms), Kaczan na drugim (67 ms),
+  PawełBM na trzecim (118 ms). Czasy testów Ty wynoszą 0, 8, 16 i 28 ms.
+- Po wyborze szkicu 04 użytkownik zaproponował docelowo cztery schodki rosnące
+  od lewej do prawej. `WorkflowJourney` realizuje ten kierunek: wspólna podstawa,
+  nagłówek nad pierwszymi krokami i wyróżniony ostatni stopień.
+  Stopnie mają równe przyrosty po 64 px, a miniilustracje pokazują kod lobby,
+  fragment Python, testy i samo podium. Tabela rankingu pozostaje tylko w hero
+  i powiększonym podglądzie. Kod, przypadki testowe i czasy są współdzielone
+  przez `lobbyDemo.ts`; karta testów pokazuje trzy konkretne tablice i ich wyniki.
+  Podium ilustruje zakończoną sesję z „Ty” na pierwszym miejscu; hero i modal
+  nadal pokazują sesję w trakcie, również z Ty na pierwszej pozycji. W finale hasło „Sięgnij po
+  pierwsze miejsce” zastępuje opis przykładu. Podium ma wysokość 200 px, a ramka
+  karty ma mocniejszy pomarańczowy akcent i delikatną poświatę. Zwycięski słupek wyróżniają
+  pomarańczowe tło, ramka i puchar oraz duży napis „Ty” (24 px).
+  Drugie i trzecie miejsce mają tylko numery, bez nicków. Chip ma podpis
+  „Kod dołączenia”, a kod pokazuje wybraną przez użytkownika pętlę z `zip`
+  szukającą najdłuższego rosnącego fragmentu, z zachowanymi wcięciami. Tekst miniilustracji ma
+  co najmniej 12 px. Doły wszystkich czterech miniilustracji są wyrównane.
+  Sekcję zamyka większe, jaśniejsze zdanie „Od wspólnego zadania do wspólnych
+  wyników.”, bez powielonego przycisku tworzenia lobby.
+  Poniżej 80 rem schody przechodzą w pionową oś czasu z lekkimi wcięciami,
+  żeby nagłówek i kod nie kolidowały na węższych laptopach. Bez obietnic czasu
+  uruchomienia, których jeszcze nie zmierzono.
+- Linki Lobby i Ranking centrują zawartość „Jak to działa” w oknie, bez
+  uwzględniania zewnętrznych odstępów sekcji. Gdy zawartość jest wyższa niż
+  ekran, przewijanie pokazuje jej początek zamiast środkowych kroków.
+- Pozostają łuki pod hero i sekcją prowadzących. Pod schodami nie ma poziomej
+  linii ani poświaty, żeby zaokrąglone dolne rogi kart pozostały widoczne.
+- Poświaty tła obejmują całą stronę główną wraz ze stopką, zamiast urywać się
+  na granicach sekcji. Stopka landingu jest przezroczysta, a odbicie neonu
+  zanika miękko. Pierwszy łuk jest podniesiony o 2 rem względem pierwotnej wersji.
+  Odbicie pod neonem jest rozmytą elipsą SVG, która używa tego samego gradientu
+  co symbol, więc kolory pozostają zsynchronizowane bez osobnych animacji.
+- Treści, funkcjonalność demonstracji i zakres issue pozostają zachowane.
+  Nie publikować tych zmian bez kolejnego zatwierdzenia użytkownika.
+
 - Tło prawie czarne, granatowo-zielone; miękkie pomarańczowe poświaty i długie,
   cienkie łuki światła między sekcjami. Biały tekst, szare opisy, pomarańczowe akcenty.
 - Zwarty, zaokrąglony pasek nagłówka odsunięty od krawędzi. Świecący symbol `</>`,

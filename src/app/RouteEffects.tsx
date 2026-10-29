@@ -36,8 +36,16 @@ export function RouteEffects() {
     ) {
       const section = document.getElementById(state.section);
       section?.focus({ preventScroll: true });
-      if (section)
-        cancelScroll = scrollToSection(section, state.section === 'funkcje');
+      if (section) {
+        const isJourney = state.section === 'jak-to-dziala';
+        const target = isJourney
+          ? (section.querySelector<HTMLElement>('.journey') ?? section)
+          : section;
+        cancelScroll = scrollToSection(
+          target,
+          isJourney || state.section === 'funkcje',
+        );
+      }
     }
     previousPath.current = pathname;
     return cancelScroll;

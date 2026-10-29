@@ -272,6 +272,12 @@ p {
   position: relative;
   padding-top: clamp(3rem, 6vw, 5rem);
 }
+.site-shell:has(.landing-page) {
+  background:
+    radial-gradient(ellipse at 95% 16%, #ff7c1515, transparent 29%),
+    radial-gradient(ellipse at 12% 38%, #d96a0d0d, transparent 30%),
+    radial-gradient(ellipse at 76% 86%, #4c172329, transparent 30%), #070f14;
+}
 .hero {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.6fr);
@@ -324,6 +330,38 @@ p {
 }
 .glow-divider {
   position: relative;
+  isolation: isolate;
+}
+.light-ribbon {
+  position: absolute;
+  left: -8%;
+  bottom: -5rem;
+  width: 116%;
+  height: 10rem;
+  z-index: -1;
+  pointer-events: none;
+  overflow: visible;
+}
+.ribbon-current {
+  stroke-dasharray: 7 93;
+  animation: ribbon-flow 22s linear infinite;
+}
+.how-section .light-ribbon {
+  transform: scaleX(-1);
+}
+.hero-stage .light-ribbon {
+  bottom: -3rem;
+}
+.teacher-section .light-ribbon {
+  bottom: -3.5rem;
+}
+@keyframes ribbon-flow {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: -100;
+  }
 }
 
 .editor-illustration {
@@ -331,7 +369,6 @@ p {
   width: 100%;
   max-width: 770px;
   position: relative;
-  perspective: 1500px;
   min-width: 0;
   filter: drop-shadow(0 18px 18px #0007);
 }
@@ -341,7 +378,7 @@ p {
   border: 1px solid #1d2b35;
   border-radius: 10px;
   overflow: hidden;
-  transform: rotateY(-3deg) rotateZ(-1deg);
+  transform: rotate(-1.2deg);
   transform-origin: center;
   box-shadow:
     inset 0 1px 0 #ffffff08,
@@ -707,6 +744,26 @@ p {
 .preview-ranking .is-you td {
   color: #fff;
 }
+.editor-window--preview .preview-ranking .is-you {
+  background: #ffa34330;
+  box-shadow: none;
+}
+.editor-window--preview .preview-ranking .is-you td:first-child {
+  position: relative;
+  box-shadow: none;
+}
+.editor-window--preview .preview-ranking .is-you td:first-child::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 2px;
+  background: var(--accent);
+  pointer-events: none;
+}
+.editor-window--preview .preview-ranking .is-you td {
+  color: #fff;
+  font-weight: 400;
+}
 .features {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -761,51 +818,11 @@ p {
 }
 .how-section {
   padding-block: var(--section-space);
-  background: radial-gradient(ellipse at 70% 100%, #341a1420, transparent 55%);
 }
 
-.workflow-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.workflow-card {
-  position: relative;
-  min-width: 0;
-  border: 1px solid #2b3c48;
-  border-radius: 13px;
-  background: linear-gradient(120deg, #0e1b23, #0a131a);
-  padding: 27px 25px;
-  box-shadow:
-    inset 0 1px 0 #ffffff02,
-    0 10px 20px #0002;
-}
-.workflow-card > .icon {
-  color: #ffae30;
-  width: 38px;
-  height: 38px;
-  filter: drop-shadow(0 0 3px #f9841730);
-  margin-bottom: 15px;
-  stroke-width: 1.8;
-}
-.workflow-card h3 {
-  font-size: 1.4375rem;
-  letter-spacing: -0.6px;
-  font-weight: 550;
-  margin-bottom: 8px;
-}
-.workflow-card p {
-  font-size: 1.125rem;
-  color: #c0cad3;
-  line-height: 1.5;
-  margin: 0;
-}
 .teacher-section {
   padding-block: var(--section-space);
-  background: radial-gradient(ellipse at 77% 65%, #4c172329, transparent 50%);
+  padding-bottom: calc(var(--section-space) + 1.5rem);
 }
 .teacher-layout {
   display: grid;
@@ -837,37 +854,87 @@ p {
   position: relative;
   isolation: isolate;
   min-width: 0;
+  --pointer-x: 0;
+  --pointer-y: 0;
+  perspective: 900px;
 }
-.neon-art svg {
+.neon-symbol {
   width: 100%;
   height: auto;
   overflow: visible;
   position: relative;
   z-index: 1;
-  transform: rotate(-7deg);
+  transform: translate3d(
+      calc(var(--pointer-x) * 14px),
+      calc(var(--pointer-y) * 8px),
+      0
+    )
+    rotateX(calc(var(--pointer-y) * -9deg))
+    rotateY(calc(var(--pointer-x) * 18deg)) rotateZ(-5deg);
+  transform-origin: 50% 55%;
+}
+.neon-bloom {
+  animation: neon-breathe 5.5s ease-in-out infinite;
+}
+.neon-color {
+  animation: neon-palette 12s ease-in-out infinite;
+}
+.neon-color--two {
+  animation-delay: -4s;
+}
+.neon-color--three {
+  animation-delay: -8s;
+}
+@keyframes neon-palette {
+  0%,
+  100% {
+    stop-color: #ffad38;
+  }
+  33% {
+    stop-color: #ff3636;
+  }
+  66% {
+    stop-color: #ff3298;
+  }
+}
+.neon-energy {
+  opacity: 0.3;
+  filter: blur(2px);
+}
+@keyframes neon-breathe {
+  0%,
+  40%,
+  100% {
+    opacity: 0.6;
+  }
+  58%,
+  72% {
+    opacity: 1;
+  }
 }
 .neon-art:before {
   content: '';
   position: absolute;
-  inset: 10% -8% -5%;
+  inset: -10% -12% -18%;
   z-index: -1;
-  background: radial-gradient(ellipse at 50% 70%, #ff3f201f, transparent 65%);
+  background: radial-gradient(
+    ellipse 50% 50% at 50% 50%,
+    #ff3f201f,
+    #ff3f200c 45%,
+    transparent 80%
+  );
 }
 .neon-reflection {
   position: absolute;
-  left: 3%;
-  right: 3%;
-  height: 30px;
-  bottom: 3%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    #ff730099,
-    #f3137199,
-    transparent
-  );
-  filter: blur(15px);
-  transform: perspective(300px) rotateX(60deg);
+  left: -3%;
+  width: 106%;
+  height: 64px;
+  bottom: -3%;
+  opacity: 0.8;
+  overflow: visible;
+  filter: blur(12px);
+  transform: translateX(calc(var(--pointer-x) * 10px)) perspective(300px)
+    rotateX(60deg);
 }
 
 .site-footer {
@@ -875,6 +942,10 @@ p {
   border-top: 1px solid #14212944;
   padding: 42px 0 36px;
   position: relative;
+}
+.site-shell:has(.landing-page) .site-footer {
+  background: transparent;
+  border-top-color: transparent;
 }
 .footer-inner {
   width: min(calc(100% - 2 * var(--gutter)), var(--content-width));
@@ -1236,9 +1307,7 @@ h4 {
 .features p {
   max-width: 36ch;
 }
-.workflow-card p {
-  max-width: 45ch;
-}
+
 .teacher-copy p:not(.eyebrow) {
   max-width: 38ch;
   margin-bottom: 24px;
@@ -1554,7 +1623,6 @@ h4 {
   }
   .editor-window {
     font-size: clamp(0.5rem, 1.45vw, 0.8125rem);
-    transform: none;
   }
   .teacher-layout {
     gap: 24px;
@@ -1622,19 +1690,6 @@ h4 {
   }
   .section-heading h2 {
     font-size: 2rem;
-  }
-  .workflow-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  .workflow-card {
-    padding: 24px;
-  }
-  .workflow-card h3 {
-    font-size: 1.375rem;
-  }
-  .workflow-card p {
-    font-size: 1rem;
   }
   .teacher-layout {
     grid-template-columns: 1fr;

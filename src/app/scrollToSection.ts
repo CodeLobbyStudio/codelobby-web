@@ -5,7 +5,10 @@ export function scrollToSection(section: HTMLElement, centered: boolean) {
   const padding =
     parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) ||
     0;
-  const offset = centered ? (window.innerHeight - rect.height) / 2 : padding;
+  const offset =
+    centered && rect.height <= window.innerHeight
+      ? (window.innerHeight - rect.height) / 2
+      : padding;
   const limit = Math.max(
     0,
     document.documentElement.scrollHeight - window.innerHeight,

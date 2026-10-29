@@ -60,4 +60,15 @@ describe('section scroll animation', () => {
     window.dispatchEvent(new WheelEvent('wheel'));
     expect(cancelFrame).toHaveBeenCalledWith(1);
   });
+
+  it('keeps the beginning visible when the centered section is taller than the viewport', () => {
+    const { section, scroll, advance } = prepare();
+    vi.mocked(section.getBoundingClientRect).mockReturnValue(
+      new DOMRect(0, 1000, 300, window.innerHeight + 400),
+    );
+    scrollToSection(section, true);
+    advance(0);
+    advance(500);
+    expect(scroll).toHaveBeenLastCalledWith({ top: 1000, behavior: 'instant' });
+  });
 });
