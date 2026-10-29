@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { Button } from '../../shared/components/Button';
+import { Alert } from '../../shared/components/Alert';
 import { Icon } from '../../shared/components/Icon';
 import { EditorIllustration } from '../components/EditorIllustration';
 import { NeonCode } from '../components/NeonCode';
 
 export function HomePage() {
+  const [notice, setNotice] = useState('');
   return (
     <>
       <section className="hero-stage glow-divider">
@@ -19,13 +22,33 @@ export function HomePage() {
               CodeLobby to platforma do uczelnianych sesji kodowania na żywo.
             </p>
             <div className="actions">
-              <Button disabled>
+              <Button
+                onClick={() =>
+                  setNotice(
+                    'Tworzenie lobby będzie dostępne w kolejnym etapie.',
+                  )
+                }
+              >
                 Utwórz lobby <span aria-hidden="true">→</span>
               </Button>
-              <Button variant="secondary" disabled>
+              <Button
+                variant="secondary"
+                onClick={() =>
+                  setNotice(
+                    'Dołączanie kodem będzie dostępne w kolejnym etapie.',
+                  )
+                }
+              >
                 Dołącz kodem
               </Button>
             </div>
+            {notice && (
+              <div className="hero-notice">
+                <Alert title="W przygotowaniu" announce>
+                  {notice}
+                </Alert>
+              </div>
+            )}
           </div>
           <EditorIllustration />
         </div>
@@ -124,9 +147,9 @@ export function HomePage() {
               Twórz zadania, zarządzaj uczestnikami i śledź postępy w czasie
               rzeczywistym. Idealne do ćwiczeń, kolokwiów i konkursów.
             </p>
-            <Button disabled>
+            <a className="button button--primary" href="#jak-to-dziala">
               Dowiedz się więcej <span aria-hidden="true">→</span>
-            </Button>
+            </a>
           </div>
           <NeonCode />
         </div>

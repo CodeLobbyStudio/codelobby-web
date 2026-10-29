@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { Icon } from '../../shared/components/Icon';
 import { ProblemPreview } from './ProblemPreview';
 
@@ -19,6 +20,7 @@ const source = [
   '    return max(best, current)',
 ];
 const testDurations = [0, 8, 16, 94];
+const inactiveControlHint = 'Dostępne w aktywnym lobby.';
 const people = [
   'Ty',
   'Kaczan',
@@ -74,9 +76,18 @@ function highlight(line: string) {
     });
 }
 
-function EditorFrame() {
+function EditorFrame({ expanded = false }: { expanded?: boolean }) {
+  const PreviewControl = expanded ? 'button' : 'span';
+  const controlProps = expanded
+    ? { type: 'button' as const, disabled: true, title: inactiveControlHint }
+    : {};
   return (
-    <div className="editor-window editor-window--preview" aria-hidden="true">
+    <div
+      className={
+        expanded ? 'editor-window' : 'editor-window editor-window--preview'
+      }
+      aria-hidden={expanded ? undefined : true}
+    >
       <div className="editor-top">
         <span className="window-dots">
           <i />
@@ -92,8 +103,24 @@ function EditorFrame() {
           </span>
           <div className="preview-task-buttons">
             {[1, 3].map((task) => {
-              const label = task === 1 ? '← Zadanie 1' : 'Zadanie 3 →';
-              return (
+              const label = (
+                <>
+                  {task === 1 && <Icon name="arrowLeft" />}
+                  <span>Zadanie {task}</span>
+                  {task === 3 && <Icon name="arrowRight" />}
+                </>
+              );
+              return expanded ? (
+                <button
+                  key={task}
+                  className="preview-next-task"
+                  type="button"
+                  disabled
+                  title={inactiveControlHint}
+                >
+                  {label}
+                </button>
+              ) : (
                 <span key={task} className="preview-next-task">
                   {label}
                 </span>
@@ -107,18 +134,18 @@ function EditorFrame() {
         </span>
       </div>
       <div className="editor-columns">
-        <ProblemPreview />
+        <ProblemPreview interactive={expanded} />
         <div className="coding-pane">
           <div className="editor-toolbar">
             <span className="language-name">
               🐍 Python 3.11 <Icon name="chevron" />
             </span>
-            <span className="preview-run">
+            <PreviewControl className="preview-run" {...controlProps}>
               <Icon name="play" /> Uruchom
-            </span>
-            <span className="preview-send">
+            </PreviewControl>
+            <PreviewControl className="preview-send" {...controlProps}>
               <Icon name="send" /> Wyślij
-            </span>
+            </PreviewControl>
           </div>
           <div className="preview-code">
             {source.map((line, i) => (
@@ -131,7 +158,9 @@ function EditorFrame() {
           <div className="test-results">
             <div className="preview-tabs">
               <span className="selected">Wyniki</span>
-              <span className="preview-console">Konsola</span>
+              <PreviewControl className="preview-console" {...controlProps}>
+                Konsola
+              </PreviewControl>
             </div>
             {testDurations.map((time, i) => (
               <div className="test-result" key={time}>
@@ -150,7 +179,28 @@ function EditorFrame() {
         </div>
         <div className="session-pane">
           <div className="pane-label">Uczestnicy ({people.length}/20)</div>
-          <ul className="preview-people" aria-label="Lista uczestników lobby">
+          {expanded && (
+            <div
+              className="participant-legend"
+              aria-label="Statusy uczestników"
+            >
+              {Object.values(participantStates).map(({ label, color }) => (
+                <span key={label}>
+                  <i
+                    className="person-dot"
+                    style={{ backgroundColor: color }}
+                    aria-hidden="true"
+                  />
+                  {label}
+                </span>
+              ))}
+            </div>
+          )}
+          <ul
+            className="preview-people"
+            tabIndex={expanded ? 0 : undefined}
+            aria-label="Lista uczestników lobby"
+          >
             {people.map((name, index) => {
               const status = ranking.some(([rankedName]) => rankedName === name)
                 ? participantStates.submitted
@@ -204,15 +254,74 @@ function EditorFrame() {
 }
 
 export function EditorIllustration() {
+  const dialog = useRef<HTMLDialogElement>(null);
+  const trigger = useRef<HTMLDivElement>(null);
+  const description =
+    'Ilustracja planowanego lobby CodeLobby: opis zadania, edytor Python, testy, uczestnicy i ranking. To statyczny podgląd, nie aktywna sesja.';
   return (
     <div className="editor-illustration">
-      <figure
-        role="img"
-        aria-label="Ilustracja planowanego lobby CodeLobby: opis zadania, edytor Python, testy, uczestnicy i ranking. Statyczny podgląd."
-        style={{ margin: 0 }}
+      <div
+        className="preview-trigger"
+        role="button"
+        tabIndex={0}
+        ref={trigger}
+        aria-label="Powiększ podgląd lobby"
+        aria-haspopup="dialog"
+        onClick={() => dialog.current?.showModal()}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            dialog.current?.showModal();
+          }
+        }}
       >
-        <EditorFrame />
-      </figure>
+        <figure role="img" aria-label={description} style={{ margin: 0 }}>
+          <EditorFrame />
+        </figure>
+        <span className="preview-hint" aria-hidden="true">
+          <Icon name="zoom" /> Powiększ podgląd
+        </span>
+      </div>
+      <dialog
+        className="preview-dialog"
+        ref={dialog}
+        aria-labelledby="preview-title"
+        onClose={() => trigger.current?.focus({ preventScroll: true })}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) {
+            const rect = event.currentTarget.getBoundingClientRect();
+            if (
+              event.clientX < rect.left ||
+              event.clientX > rect.right ||
+              event.clientY < rect.top ||
+              event.clientY > rect.bottom
+            )
+              event.currentTarget.close();
+          }
+        }}
+      >
+        <header className="preview-dialog-header">
+          <h2 id="preview-title">
+            Podgląd lobby <span className="preview-badge">Ilustracja</span>
+          </h2>
+          <button
+            className="preview-close"
+            type="button"
+            aria-label="Zamknij podgląd"
+            onClick={() => dialog.current?.close()}
+          >
+            <Icon name="close" />
+          </button>
+        </header>
+        <div
+          className="preview-dialog-scroll"
+          tabIndex={0}
+          role="region"
+          aria-label="Podgląd lobby"
+        >
+          <EditorFrame expanded />
+        </div>
+      </dialog>
     </div>
   );
 }

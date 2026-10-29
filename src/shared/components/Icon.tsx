@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 
 const shapes: Record<string, ReactNode> = {
+  arrowLeft: <path d="M19 12H5m6-6-6 6 6 6" />,
+  arrowRight: <path d="M5 12h14m-6-6 6 6-6 6" />,
   zoom: (
     <>
       <circle cx="10" cy="10" r="6" />

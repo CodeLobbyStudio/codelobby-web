@@ -98,26 +98,26 @@ Bootstrap work tracks [web #3](https://github.com/CodeLobbyStudio/codelobby-web/
 layout/components track [web #4](https://github.com/CodeLobbyStudio/codelobby-web/issues/4).
 Registration/login follows in web #16, and API client/session/profile in web #17.
 
-## Current delivery stage: static visual foundation
-
-This branch is a work in progress for web #4. The landing page follows the team's
-agreed dark design with orange accents, a header/footer, feature and workflow
-sections, an instructor illustration and an inline lobby illustration.
-
-All landing navigation, account-entry controls, lobby actions and footer actions
-are intentionally inactive. The lobby illustration does not open a dialog, switch
-tabs or execute code. Participant names, scores, times and test results are
-illustrative data. The keyboard skip link remains available for accessibility.
-Manual browser scrolling works normally; section buttons do not trigger scrolling.
-
-The existing `/login`, `/register`, `/profile` and 404 route skeleton is retained,
-but the landing page does not navigate to account screens in this stage.
-Interactive navigation and an expanded lobby preview are planned as a subsequent
-increment. This static milestone does not complete all acceptance criteria of #4.
-
-Fonts are self-hosted through pinned Fontsource packages. There are no new backend
-requests, authentication, token handling or nonexistent API endpoints. The page
-can be viewed locally without a backend using the commands above.
+The current visual direction follows the team references recorded in
+[docs/TEAM-DESIGN.md](docs/TEAM-DESIGN.md): a dark landing page with orange accents,
+a static editor illustration, feature/step sections and an instructor section.
+The editor's timer, people, tests and ranking are illustrative content, not a
+running session or API responses. Run, Submit, Console and task navigation remain
+disabled. The entire mockup is keyboard-accessible and opens a preview in a native
+dialog; Description, Examples and Tests tabs switch local demonstration content.
+Escape closes the dialog and restores focus.
+The dialog has a fixed header, independently scrolling content and a single-column
+mobile layout. Clicking the backdrop also closes it.
+Navigation remains visible and wraps into centered rows on smaller screens.
+Section navigation uses an explicit 650 ms scroll animation, including when native smooth scrolling is disabled;
+the Tasks link centers the feature row in the viewport.
+Inter and Space Grotesk fonts (including Polish glyphs) are self-hosted through
+pinned Fontsource packages, without a third-party font service.
+Lobby actions explain that functionality is forthcoming. Header section links
+scroll through the landing page without URL fragments; Ranking currently shares
+the Lobby section. Account-entry links use the existing routes.
+Legal and social destinations remain local notices until actual documents and
+official URLs are provided.
 
 ## API configuration
 

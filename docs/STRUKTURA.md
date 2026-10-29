@@ -36,7 +36,7 @@ Na start dzielimy frontend głównie po funkcjach, a nie po typie pliku.
 Katalogi funkcjonalne pozostają na swoich miejscach. Kod domenowy dokładamy do odpowiedniej funkcji, gdy realizujemy jej ticket. Nie dodajemy atrap API ani danych użytkownika w szkielecie.
 
 Aktualne założenia wizualne i szczegóły ze screenów zespołu opisuje `TEAM-DESIGN.md`.
-Ilustracja edytora jest opisana jako obraz. ProblemPreview wyświetla statyczny
-opis zadania. Na tym etapie nie ma modala, przełączania zakładek ani wykonywania
-kodu. Nawigacja i akcje landingu pozostają nieaktywne; interaktywność jest
-planowana jako kolejny przyrost prac.
+Miniatura edytora jest opisana jako obraz. Powiększony dialog udostępnia treść
+czytnikom ekranu oraz zakładki Opis, Przykłady i Testy z komponentu ProblemPreview.
+Uruchom, Wyślij, Konsola i nawigacja zadań pozostają nieaktywne. Nie ma wykonywania
+kodu ani żądań do backendu.
