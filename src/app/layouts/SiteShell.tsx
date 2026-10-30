@@ -1,9 +1,15 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { Icon } from '../../shared/components/Icon';
+import { session } from '../../features/auth/session';
 
 export function SiteShell() {
+  const accessToken = useSyncExternalStore(
+    session.subscribe,
+    session.getAccessToken,
+    () => null,
+  );
   const { pathname, state, key } = useLocation();
   const [initialKey] = useState(key);
   const isSectionNavigation = key !== initialKey;
@@ -91,15 +97,17 @@ export function SiteShell() {
             ))}
           </nav>
           <div className="header-actions">
-            <button
-              type="button"
-              className="notification-button"
-              disabled
-              aria-label="Powiadomienia — w przygotowaniu"
-              title="Powiadomienia — w przygotowaniu"
-            >
-              <Icon name="bell" />
-            </button>
+            {accessToken && (
+              <button
+                type="button"
+                className="notification-button"
+                disabled
+                aria-label="Powiadomienia — w przygotowaniu"
+                title="Powiadomienia — w przygotowaniu"
+              >
+                <Icon name="bell" />
+              </button>
+            )}
             <NavLink className="login-link" to="/login">
               Zaloguj się
             </NavLink>

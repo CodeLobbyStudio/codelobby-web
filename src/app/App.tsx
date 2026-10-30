@@ -3,7 +3,7 @@ import { AccountLayout } from './layouts/AccountLayout';
 import { PublicLayout } from './layouts/PublicLayout';
 import { SiteShell } from './layouts/SiteShell';
 import { HomePage } from './pages/HomePage';
-import { AuthPlaceholderPage } from './pages/AuthPlaceholderPage';
+import { AuthPage } from '../features/auth/AuthPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { RouteEffects } from './RouteEffects';
@@ -18,11 +18,11 @@ export function App() {
             <Route index element={<HomePage />} />
             <Route
               path="login"
-              element={<AuthPlaceholderPage mode="login" />}
+              element={<AuthPage key="login" mode="login" />}
             />
             <Route
               path="register"
-              element={<AuthPlaceholderPage mode="register" />}
+              element={<AuthPage key="register" mode="register" />}
             />
             <Route path="*" element={<NotFoundPage />} />
           </Route>

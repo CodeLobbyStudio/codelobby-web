@@ -82,21 +82,73 @@ page. Route changes update the document title and move keyboard focus to the
 main content. A render error boundary keeps navigation available and provides a
 safe fallback with retry.
 
-Login, registration and profile content remain explicit placeholders: no forms,
-session, user data or API requests are implemented yet. The account layout is
-presentation only; `/profile` receives authentication protection in web #17.
-The application runs without the backend.
+Login and registration use real backend endpoints through the development proxy.
+The landing page and forms render without a backend, but successful registration
+and login require the backend and its database. `/profile` remains a presentation
+placeholder; profile loading, route protection and the full session lifecycle
+belong to web #17.
+
+Registration validates email and a password of at least 8 characters and at most
+72 UTF-8 bytes (matching the backend's additional BCrypt limit). Passwords are not
+trimmed or normalized. Registration returns a user record, not a token, and sends
+the visitor to login with a confirmation. Login sends the returned Bearer token
+to a minimal in-memory handoff module. It displays a success confirmation without
+pretending the profile or active lobby is implemented. The token is lost on reload;
+neither token nor password is written to browser storage, URLs or logs. Passwords
+are cleared after successful submission. This is intentionally not a complete
+authenticated session; web #17 will add `/me` verification and session management.
+The notification icon is hidden for visitors and appears only after a successful
+login in the current in-memory session. Notifications themselves are not yet
+implemented, so the icon remains disabled. Reloading ends this temporary session
+and hides the icon again.
+
+### Test registration and login locally
+
+1. Follow the sibling `codelobby-infra/README.md` to configure a local `.env` and
+   start PostgreSQL with Docker Compose. Do not overwrite existing credentials.
+2. Follow `codelobby-backend/README.md`: use Java 21, configure `DB_PASSWORD` and
+   `JWT_SECRET_BASE64` only in the backend environment, then run
+   `.\mvnw.cmd spring-boot:run` (or `./mvnw spring-boot:run` on Linux/macOS).
+3. Start this frontend with `npm run dev`. Keep `VITE_API_BASE_URL=/api` and the
+   default `API_PROXY_TARGET=http://localhost:8080`, or adjust your local `.env`
+   and restart Vite when the backend runs elsewhere.
+4. Open `/register`, create a disposable local test account and then sign in at
+   `/login`. Try an already used email, a wrong password and a stopped backend.
+
+Only email and password are sent to `/api/auth/register` and `/api/auth/login`.
+Public auth requests omit credentials and Authorization. No automatic POST retry
+is performed: on network failure or a 15-second timeout, retry manually. A timed
+out registration might already have created the account, so try signing in first.
+Requests are aborted when leaving the form; late responses cannot set the token.
+Component tests mock fetch responses; they do not replace real API behavior in
+the application or prove a live backend connection.
+
+For the sibling-repository layout used by this project, Windows users can also
+run `./scripts/start-local-backend.ps1` from this repository after starting Docker
+Desktop. The script starts/checks PostgreSQL, reads database settings and
+`JWT_SECRET_BASE64` from the ignored `codelobby-infra/.env`, selects an installed
+Microsoft JDK 21 (or uses `JAVA_HOME`) and runs the backend bound to `127.0.0.1`.
+Keep that terminal open; use a second terminal for `npm run dev`.
+
+The local infra `.env` must include a private `JWT_SECRET_BASE64` value encoding
+exactly 32 random bytes, in addition to its PostgreSQL settings. Keep the same
+value across restarts to avoid invalidating tokens. The helper never prints these
+values and does not put them in frontend environment variables. PostgreSQL data
+stays in the `codelobby-local_postgres_data` Docker volume. Stop the database using
+`docker compose --env-file .env -f local/compose.yaml stop` in the infra repository;
+do not delete the volume when you want to keep local accounts.
 
 Shared UI components include Button (disabled/loading), FormField (native input,
 label, hint and validation feedback), Alert, LoadingIndicator, EmptyState and
-ErrorState. Form controls are prepared for web #16 and are tested without adding
-nonfunctional forms to the public interface. Alerts announce dynamic content only
+ErrorState. Registration and login reuse these tested form controls.
+Alerts announce dynamic content only
 when the caller explicitly opts in with `announce`; static notices do not interrupt
 screen readers. ErrorState uses safe copy rather than raw exception messages.
 
 Bootstrap work tracks [web #3](https://github.com/CodeLobbyStudio/codelobby-web/issues/3);
 layout/components track [web #4](https://github.com/CodeLobbyStudio/codelobby-web/issues/4).
-Registration/login follows in web #16, and API client/session/profile in web #17.
+Registration/login tracks web #16. The public JSON transport is shared with the
+future authenticated API client/session/profile work in web #17.
 
 The current visual direction follows the team references recorded in
 [docs/TEAM-DESIGN.md](docs/TEAM-DESIGN.md): a dark landing page with orange accents,
@@ -122,7 +174,7 @@ official URLs are provided.
 ## API configuration
 
 `VITE_API_BASE_URL` is public browser configuration, defaulting to `/api`.
-`src/shared/api/config.ts` exposes it for the future API client; components should
+`src/shared/api/config.ts` exposes it for the API client; components should
 not embed backend hostnames. All `VITE_*` variables are included in the client
 bundle: never put passwords, JWT signing secrets or private keys in them.
 

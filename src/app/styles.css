@@ -1021,6 +1021,39 @@ p {
   max-width: 36rem;
   padding-block: clamp(3rem, 6vw, 5rem);
 }
+.auth-layout--with-art {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(40px, 6vw, 96px);
+  max-width: 72rem;
+}
+.auth-layout--with-art .auth-panel {
+  min-width: 0;
+}
+.auth-art {
+  min-width: 0;
+  padding: 32px 16px;
+  pointer-events: none;
+}
+.auth-art .neon-art {
+  width: 100%;
+  max-width: 32rem;
+  margin-inline: auto;
+}
+@media (max-width: 56rem) {
+  .auth-layout--with-art {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 36rem;
+    gap: 24px;
+  }
+  .auth-art {
+    padding: 16px 24px 32px;
+  }
+  .auth-art .neon-art {
+    max-width: 24rem;
+  }
+}
 .text-link {
   display: inline-flex;
   align-items: center;
@@ -1048,6 +1081,29 @@ p {
 .auth-switch {
   font-size: 0.875rem;
   margin: 28px 0 0;
+}
+.auth-form {
+  margin-top: 24px;
+}
+.auth-form > .button {
+  width: 100%;
+}
+.auth-password-toggle {
+  display: block;
+  margin: -12px 0 16px auto;
+  min-height: 44px;
+  padding: 8px 0 8px 12px;
+  background: transparent;
+  border: 0;
+  color: #ffbf7b;
+  font-size: 0.875rem;
+}
+.auth-result:empty {
+  display: none;
+}
+.auth-result:not(:empty) {
+  margin-block: 20px;
+  outline-offset: 4px;
 }
 .alert {
   display: flex;
