@@ -38,28 +38,30 @@ const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), { status });
 
 describe('auth forms', () => {
-  it.each([
-    ['/login', 'Zaloguj się', '/api/auth/login'],
-    ['/register', 'Załóż konto', '/api/auth/register'],
-  ])(
-    'submits an email with a single-label domain on %s',
-    async (path, button, endpoint) => {
-      const { fetch } = setup(path);
-      fetch.mockResolvedValue(json({ code: 'VALIDATION_ERROR' }, 400));
-      fill('Password123!', 'example@localhost');
+  describe.each(['example@localhost', '"much.more unusual"@example.com'])(
+    'email address %s',
+    (email) => {
+      it.each([
+        ['/login', 'Zaloguj się', '/api/auth/login'],
+        ['/register', 'Załóż konto', '/api/auth/register'],
+      ])('submits the address on %s', async (path, button, endpoint) => {
+        const { fetch } = setup(path);
+        fetch.mockResolvedValue(json({ code: 'VALIDATION_ERROR' }, 400));
+        fill('Password123!', email);
 
-      await userEvent.click(screen.getByRole('button', { name: button }));
+        await userEvent.click(screen.getByRole('button', { name: button }));
 
-      expect(fetch).toHaveBeenCalledExactlyOnceWith(
-        endpoint,
-        expect.objectContaining({
-          method: 'POST',
-          body: JSON.stringify({
-            email: 'example@localhost',
-            password: 'Password123!',
+        expect(fetch).toHaveBeenCalledExactlyOnceWith(
+          endpoint,
+          expect.objectContaining({
+            method: 'POST',
+            body: JSON.stringify({
+              email,
+              password: 'Password123!',
+            }),
           }),
-        }),
-      );
+        );
+      });
     },
   );
   it('validates before sending and focuses the invalid field', async () => {
