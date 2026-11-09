@@ -3,7 +3,7 @@ import { Button } from '../../shared/components/Button';
 import { Alert } from '../../shared/components/Alert';
 import { WorkflowJourney } from '../components/WorkflowJourney';
 import { EditorIllustration } from '../components/EditorIllustration';
-import { NeonCode } from '../components/NeonCode';
+import { NeonCode } from '../../shared/components/NeonCode';
 import { LightRibbon } from '../components/LightRibbon';
 
 export function HomePage() {

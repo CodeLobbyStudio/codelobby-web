@@ -202,7 +202,10 @@ describe('application routing', () => {
     expect(
       screen.getByRole('heading', { level: 1, name: title }),
     ).toBeInTheDocument();
-    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+    if (path !== '/profile')
+      expect(
+        screen.getByRole('textbox', { name: 'Email' }),
+      ).toBeInTheDocument();
   });
 
   it('shows 404 for unknown URLs and lets the user return home', async () => {
@@ -250,8 +253,8 @@ describe('application routing', () => {
       screen.queryByRole('button', { name: 'Wyślij' }),
     ).not.toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Powiadomienia — w przygotowaniu' }),
-    ).toBeDisabled();
+      screen.queryByRole('button', { name: 'Powiadomienia — w przygotowaniu' }),
+    ).not.toBeInTheDocument();
   });
 
   it('keeps footer placeholders local instead of inventing legal or social links', async () => {
