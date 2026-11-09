@@ -26,9 +26,9 @@ function setup(path = '/login') {
   );
   return { fetch, ...view };
 }
-function fill(password = 'Password123!') {
+function fill(password = 'Password123!', email = ' Test@Example.com ') {
   fireEvent.change(screen.getByLabelText('Email'), {
-    target: { value: ' Test@Example.com ' },
+    target: { value: email },
   });
   fireEvent.change(screen.getByLabelText('Hasło'), {
     target: { value: password },
@@ -38,6 +38,30 @@ const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), { status });
 
 describe('auth forms', () => {
+  it.each([
+    ['/login', 'Zaloguj się', '/api/auth/login'],
+    ['/register', 'Załóż konto', '/api/auth/register'],
+  ])(
+    'submits an email with a single-label domain on %s',
+    async (path, button, endpoint) => {
+      const { fetch } = setup(path);
+      fetch.mockResolvedValue(json({ code: 'VALIDATION_ERROR' }, 400));
+      fill('Password123!', 'example@localhost');
+
+      await userEvent.click(screen.getByRole('button', { name: button }));
+
+      expect(fetch).toHaveBeenCalledExactlyOnceWith(
+        endpoint,
+        expect.objectContaining({
+          method: 'POST',
+          body: JSON.stringify({
+            email: 'example@localhost',
+            password: 'Password123!',
+          }),
+        }),
+      );
+    },
+  );
   it('validates before sending and focuses the invalid field', async () => {
     const { fetch } = setup('/register');
     await userEvent.click(screen.getByRole('button', { name: 'Załóż konto' }));

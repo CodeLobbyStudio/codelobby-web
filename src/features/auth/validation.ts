@@ -5,7 +5,7 @@ export function validateCredentials(
 ) {
   const errors: { email?: string; password?: string } = {};
   const normalizedEmail = email.trim();
-  if (!normalizedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail))
+  if (!/^[^\s@]+@[^\s@]+$/.test(normalizedEmail))
     errors.email = 'Podaj prawidłowy adres email.';
   else if (register && normalizedEmail.length > 230)
     errors.email = 'Adres email może mieć maksymalnie 230 znaków.';
