@@ -36,6 +36,11 @@ function fill(password = 'Password123!', email = ' Test@Example.com ') {
 }
 const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), { status });
+const profile = {
+  id: 17,
+  email: 'profile@example.com',
+  createdAt: '2026-10-30T00:00:00Z',
+};
 
 describe('auth forms', () => {
   describe.each(['example@localhost', '"much.more unusual"@example.com'])(
@@ -101,22 +106,87 @@ describe('auth forms', () => {
     expect(options.headers).not.toHaveProperty('Authorization');
     expect(options.headers['Content-Type']).toBe('application/json');
   });
-  it('hands the token to the in-memory session and clears the password after login', async () => {
+  it('verifies login with a Bearer token, renders the backend profile and logs out', async () => {
     const { fetch } = setup();
-    fetch.mockResolvedValue(
-      json({ accessToken: 'test-token', tokenType: 'Bearer' }),
-    );
+    fetch
+      .mockResolvedValueOnce(
+        json({ accessToken: 'test-token', tokenType: 'Bearer' }),
+      )
+      .mockResolvedValueOnce(json(profile));
     fill();
     await userEvent.click(screen.getByRole('button', { name: 'Zaloguj się' }));
-    expect(await screen.findByText('Logowanie powiodło się')).toBeVisible();
+    expect(
+      await screen.findByRole('heading', { name: 'Profil' }),
+    ).toBeVisible();
+    expect(screen.getByText(profile.email)).toBeVisible();
+    expect(screen.getByText(String(profile.id))).toBeVisible();
+    expect(screen.getByText(/października/)).toHaveAttribute(
+      'datetime',
+      profile.createdAt,
+    );
+    expect(fetch.mock.calls[0][1].headers).not.toHaveProperty('Authorization');
+    expect(fetch).toHaveBeenNthCalledWith(
+      2,
+      '/api/users/me',
+      expect.objectContaining({
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          Authorization: 'Bearer test-token',
+        },
+      }),
+    );
     expect(session.getAccessToken()).toBe('test-token');
     expect(
       screen.getByRole('button', { name: 'Powiadomienia — w przygotowaniu' }),
     ).toBeDisabled();
     expect(screen.queryByLabelText('Hasło')).not.toBeInTheDocument();
-    expect(sessionStorage.length).toBe(0);
+    expect(sessionStorage.getItem('codelobby.accessToken')).toBe('test-token');
+    expect(sessionStorage.length).toBe(1);
     expect(localStorage.length).toBe(0);
+    await userEvent.click(screen.getByRole('button', { name: 'Wyloguj się' }));
+    expect(
+      screen.getByRole('heading', { level: 1, name: /Koduj/ }),
+    ).toBeVisible();
+    expect(screen.queryByText(profile.email)).not.toBeInTheDocument();
+    expect(session.getAccessToken()).toBeNull();
+    expect(session.getCurrentUser()).toBeNull();
+    expect(sessionStorage.getItem('codelobby.accessToken')).toBeNull();
+    expect(fetch).toHaveBeenCalledTimes(2);
   });
+  it.each([
+    [
+      () => json({ code: 'INVALID_TOKEN' }, 401),
+      /Nie udało się potwierdzić sesji/,
+    ],
+    [
+      () => {
+        throw new TypeError('network');
+      },
+      /Nie można połączyć/,
+    ],
+  ])(
+    'leaves the session anonymous when profile verification fails',
+    async (reply, message) => {
+      const { fetch } = setup();
+      fetch
+        .mockResolvedValueOnce(
+          json({ accessToken: 'test-token', tokenType: 'Bearer' }),
+        )
+        .mockImplementationOnce(reply);
+      fill();
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Zaloguj się' }),
+      );
+      expect(await screen.findByText(message)).toBeVisible();
+      expect(session.getSnapshot()).toEqual({ status: 'anonymous' });
+      expect(session.getAccessToken()).toBeNull();
+      expect(
+        screen.queryByRole('link', { name: 'Profil' }),
+      ).not.toBeInTheDocument();
+      expect(fetch).toHaveBeenCalledTimes(2);
+    },
+  );
   it.each([
     [401, 'INVALID_CREDENTIALS', 'Nieprawidłowy email lub hasło.'],
     [409, 'EMAIL_ALREADY_EXISTS', /Ten adres email jest już zajęty/],
@@ -160,11 +230,15 @@ describe('auth forms', () => {
     expect(button).toBeDisabled();
     await act(async () => reject(new TypeError('network')));
     expect(await screen.findByText(/Nie można połączyć/)).toBeVisible();
-    fetch.mockResolvedValue(
-      json({ accessToken: 'retry-token', tokenType: 'Bearer' }),
-    );
+    fetch
+      .mockResolvedValueOnce(
+        json({ accessToken: 'retry-token', tokenType: 'Bearer' }),
+      )
+      .mockResolvedValueOnce(json(profile));
     await userEvent.click(button);
-    expect(await screen.findByText('Logowanie powiodło się')).toBeVisible();
+    expect(
+      await screen.findByRole('heading', { name: 'Profil' }),
+    ).toBeVisible();
   });
   it('rejects malformed success responses', async () => {
     const { fetch } = setup();
@@ -173,6 +247,68 @@ describe('auth forms', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Zaloguj się' }));
     expect(await screen.findByText(/nieprawidłową odpowiedź/)).toBeVisible();
     expect(session.getAccessToken()).toBeNull();
+  });
+  it('restores a saved session only after verifying it with the backend', async () => {
+    const fetch = vi.fn().mockResolvedValueOnce(json(profile));
+    vi.stubGlobal('fetch', fetch);
+    await session.login('test-token');
+
+    vi.resetModules();
+    const { session: reloaded } = await import('../src/features/auth/session');
+    expect(reloaded.getSnapshot()).toEqual({ status: 'initializing' });
+    expect(reloaded.getAccessToken()).toBeNull();
+    expect(reloaded.getCurrentUser()).toBeNull();
+
+    fetch.mockResolvedValueOnce(json(profile));
+    await Promise.all([reloaded.restore(), reloaded.restore()]);
+    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(fetch).toHaveBeenLastCalledWith(
+      '/api/users/me',
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Authorization: 'Bearer test-token',
+        }),
+      }),
+    );
+    expect(reloaded.getCurrentUser()).toEqual(profile);
+  });
+  it('keeps a saved token after a network error and removes it if retry returns 401', async () => {
+    sessionStorage.setItem('codelobby.accessToken', 'old-token');
+    const fetch = vi
+      .fn()
+      .mockRejectedValueOnce(new TypeError('network'))
+      .mockResolvedValueOnce(json({ code: 'INVALID_TOKEN' }, 401));
+    vi.stubGlobal('fetch', fetch);
+
+    vi.resetModules();
+    const { session: reloaded } = await import('../src/features/auth/session');
+    await reloaded.restore();
+    expect(reloaded.getSnapshot()).toEqual({ status: 'unavailable' });
+    expect(reloaded.getCurrentUser()).toBeNull();
+    expect(sessionStorage.getItem('codelobby.accessToken')).toBe('old-token');
+
+    await reloaded.restore();
+    expect(reloaded.getSnapshot()).toEqual({ status: 'anonymous' });
+    expect(sessionStorage.getItem('codelobby.accessToken')).toBeNull();
+  });
+  it('does not restore a session when profile verification finishes after logout', async () => {
+    let resolve!: (value: Response) => void;
+    const fetch = vi.fn(
+      () =>
+        new Promise<Response>((done) => {
+          resolve = done;
+        }),
+    );
+    vi.stubGlobal('fetch', fetch);
+    const pending = session.login('test-token');
+    expect(session.getSnapshot()).toEqual({ status: 'initializing' });
+
+    session.logout();
+    resolve(json(profile));
+    await expect(pending).rejects.toMatchObject({ name: 'AbortError' });
+    expect(session.getCurrentUser()).toBeNull();
+    expect(session.getAccessToken()).toBeNull();
+    expect(sessionStorage.getItem('codelobby.accessToken')).toBeNull();
   });
   it('aborts on navigation and ignores a late successful response', async () => {
     const { fetch } = setup();
