@@ -16,10 +16,23 @@ export class ApiError extends Error {
   }
 }
 
-/** Public JSON requests: no credentials, automatic retries or token logging. */
-export async function postJson(
+export function postJson(
   path: string,
   body: unknown,
+  signal?: AbortSignal,
+  timeoutMs = 15000,
+) {
+  return requestJson(path, { method: 'POST', body }, signal, timeoutMs);
+}
+
+export function getJson(path: string, token?: string, signal?: AbortSignal) {
+  return requestJson(path, { method: 'GET', token }, signal);
+}
+
+async function requestJson(
+  path: string,
+  request:
+    { method: 'POST'; body: unknown } | { method: 'GET'; token?: string },
   signal?: AbortSignal,
   timeoutMs = 15000,
 ): Promise<unknown> {
@@ -34,12 +47,15 @@ export async function postJson(
   }, timeoutMs);
   try {
     const response = await fetch(`${apiBaseUrl.replace(/\/$/, '')}${path}`, {
-      method: 'POST',
+      method: request.method,
       headers: {
-        'Content-Type': 'application/json',
         Accept: 'application/json',
+        ...(request.method === 'POST'
+          ? { 'Content-Type': 'application/json' }
+          : request.token && { Authorization: `Bearer ${request.token}` }),
       },
-      body: JSON.stringify(body),
+      body:
+        request.method === 'POST' ? JSON.stringify(request.body) : undefined,
       credentials: 'omit',
       signal: controller.signal,
     });

@@ -83,24 +83,33 @@ main content. A render error boundary keeps navigation available and provides a
 safe fallback with retry.
 
 Login and registration use real backend endpoints through the development proxy.
-The landing page and forms render without a backend, but successful registration
-and login require the backend and its database. `/profile` remains a presentation
-placeholder; profile loading, route protection and the full session lifecycle
-belong to web #17.
+The landing page and forms render without a backend. Registration, login and
+profile verification require the backend and its database. Visitors who open
+`/profile` are sent to `/login`.
 
-Registration validates email and a password of at least 8 characters and at most
-72 UTF-8 bytes (matching the backend's additional BCrypt limit). Passwords are not
+Registration requires an email address and a password of at least 8 characters
+and at most 72 UTF-8 bytes (matching the backend's additional BCrypt limit).
+The backend validates the email format. Passwords are not
 trimmed or normalized. Registration returns a user record, not a token, and sends
-the visitor to login with a confirmation. Login sends the returned Bearer token
-to a minimal in-memory handoff module. It displays a success confirmation without
-pretending the profile or active lobby is implemented. The token is lost on reload;
-neither token nor password is written to browser storage, URLs or logs. Passwords
-are cleared after successful submission. This is intentionally not a complete
-authenticated session; web #17 will add `/me` verification and session management.
-The notification icon is hidden for visitors and appears only after a successful
-login in the current in-memory session. Notifications themselves are not yet
-implemented, so the icon remains disabled. Reloading ends this temporary session
-and hides the icon again.
+the visitor to login with a confirmation. After login, the frontend verifies the
+Bearer token with `GET /api/users/me` and opens `/profile` with the ID, email and
+creation date from the backend. A `401` during verification clears the session.
+The header shows the profile link, logout and the disabled notification icon
+after verification. Logout clears the token and profile locally and returns to
+the landing page. Passwords are cleared when the server accepts the form.
+
+**MVP session strategy (web #17).** The frontend saves the access token in
+`sessionStorage` to keep the user signed in across reloads in the same tab.
+After reload it shows a loading state on account pages and verifies the saved
+token with `GET /api/users/me` before showing profile data. Logout and a `401`
+remove the saved token. If verification fails due to a network or server error,
+the user can retry. The profile stays in memory and the password is never saved.
+The token is accessible to JavaScript on the same origin, so XSS can expose it.
+
+**Backend follow-up.** Agree on a long-term way to protect the token with the
+backend team. Evaluate server-managed sessions or HttpOnly cookies and their
+XSS and CSRF trade-offs. The current API has no token refresh or server-side
+logout endpoint, so token renewal and revocation remain follow-up topics.
 
 ### Test registration and login locally
 
@@ -112,8 +121,11 @@ and hides the icon again.
 3. Start this frontend with `npm run dev`. Keep `VITE_API_BASE_URL=/api` and the
    default `API_PROXY_TARGET=http://localhost:8080`, or adjust your local `.env`
    and restart Vite when the backend runs elsewhere.
-4. Open `/register`, create a disposable local test account and then sign in at
-   `/login`. Try an already used email, a wrong password and a stopped backend.
+4. Open `/register`, create a disposable local test account and sign in. Check
+   the account details on `/profile`, then reload and verify that the profile
+   returns. Log out and open `/profile` again to confirm it redirects to login.
+   Try an already used email,
+   a wrong password and a stopped backend.
 
 Only email and password are sent to `/api/auth/register` and `/api/auth/login`.
 Public auth requests omit credentials and Authorization. No automatic POST retry
@@ -147,8 +159,8 @@ screen readers. ErrorState uses safe copy rather than raw exception messages.
 
 Bootstrap work tracks [web #3](https://github.com/CodeLobbyStudio/codelobby-web/issues/3);
 layout/components track [web #4](https://github.com/CodeLobbyStudio/codelobby-web/issues/4).
-Registration/login tracks web #16. The public JSON transport is shared with the
-future authenticated API client/session/profile work in web #17.
+Registration and login track web #16. The shared HTTP transport, protected
+profile and session management track web #17.
 
 The current visual direction follows the team references recorded in
 [docs/TEAM-DESIGN.md](docs/TEAM-DESIGN.md): a dark landing page with orange accents,

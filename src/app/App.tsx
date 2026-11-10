@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
+import { session } from '../features/auth/session';
 import { AccountLayout } from './layouts/AccountLayout';
 import { PublicLayout } from './layouts/PublicLayout';
 import { SiteShell } from './layouts/SiteShell';
@@ -9,6 +11,10 @@ import { NotFoundPage } from './pages/NotFoundPage';
 import { RouteEffects } from './RouteEffects';
 
 export function App() {
+  useEffect(() => {
+    void session.restore();
+  }, []);
+
   return (
     <>
       <RouteEffects />
