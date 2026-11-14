@@ -138,10 +138,17 @@ export function SiteShell() {
                 >
                   <Icon name="bell" />
                 </button>
-                <NavLink className="login-link" to="/profile">
+                <NavLink
+                  className="button button--secondary account-action"
+                  to="/profile"
+                >
                   Profil
                 </NavLink>
-                <Button variant="secondary" onClick={logout}>
+                <Button
+                  className="account-action"
+                  variant="secondary"
+                  onClick={logout}
+                >
                   Wyloguj się
                 </Button>
               </>

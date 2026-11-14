@@ -116,12 +116,7 @@ export default function WorkspacePreview({
               </button>
             ))}
           </div>
-          <JavaEditor
-            key={activeFile.path}
-            file={activeFile}
-            content={drafts[activeFile.path] ?? activeFile.content}
-            onChange={edit}
-          />
+          <JavaEditor file={activeFile} onChange={edit} />
           <div className="workspace-run">
             <label>
               Scenariusz demonstracyjny

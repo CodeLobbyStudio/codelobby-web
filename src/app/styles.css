@@ -258,6 +258,12 @@ p {
   min-height: 44px;
   white-space: nowrap;
 }
+.header-actions .account-action {
+  min-inline-size: 8rem;
+  flex-shrink: 0;
+  padding-inline: 1rem;
+  white-space: nowrap;
+}
 .eyebrow {
   color: #d7e0e8;
   font:
@@ -1153,12 +1159,21 @@ p {
   border-right: 1px solid var(--border);
   padding-right: 25px;
 }
+.account-sidebar nav {
+  display: grid;
+  gap: 4px;
+}
 .account-sidebar nav a {
   display: block;
   padding: 10px 14px;
   border-radius: 6px;
+  color: var(--muted);
   text-decoration: none;
   min-height: 44px;
+}
+.account-sidebar nav a:hover {
+  background: var(--surface);
+  color: var(--ink);
 }
 .account-sidebar nav a[aria-current='page'] {
   background: #3d2718;

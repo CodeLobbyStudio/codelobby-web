@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
+import { useState } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, expect, it, vi } from 'vitest';
 import WorkspacePreview from '../src/features/workspace/WorkspacePreview';
@@ -9,20 +10,25 @@ import { RunResults } from '../src/features/workspace/RunResults';
 vi.mock('../src/features/workspace/JavaEditor', () => ({
   JavaEditor: ({
     file,
-    content,
     onChange,
   }: {
     file: (typeof demoTask.files)[number];
-    content: string;
     onChange: (path: string, content: string) => void;
-  }) => (
-    <textarea
-      aria-label={file.path}
-      value={content}
-      readOnly={file.role === 'READ_ONLY'}
-      onChange={(event) => onChange(file.path, event.target.value)}
-    />
-  ),
+  }) => {
+    const [buffers, setBuffers] = useState<Record<string, string>>({});
+    return (
+      <textarea
+        aria-label={file.path}
+        value={buffers[file.path] ?? file.content}
+        readOnly={file.role === 'READ_ONLY'}
+        onChange={(event) => {
+          const content = event.target.value;
+          setBuffers((previous) => ({ ...previous, [file.path]: content }));
+          onChange(file.path, content);
+        }}
+      />
+    );
+  },
 }));
 
 afterEach(() => vi.useRealTimers());

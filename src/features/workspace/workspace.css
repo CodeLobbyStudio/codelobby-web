@@ -74,6 +74,7 @@
 .workspace-editor {
   position: relative;
   isolation: isolate;
+  height: clamp(17rem, 44vh, 30rem);
 }
 .workspace-editor:focus-within::after {
   content: '';
@@ -83,26 +84,14 @@
   border: 2px solid var(--accent);
   pointer-events: none;
 }
-.workspace-editor .cm-editor {
-  position: relative;
-  z-index: 0;
-  min-height: 17rem;
-  max-height: 32rem;
-  font-size: 0.9rem;
-  background: #101a22;
-}
-.workspace-editor .cm-editor.cm-focused {
-  outline: none;
-}
-.workspace-editor .cm-gutters {
-  background: #101a22;
-  color: #a2aeb9;
-}
-.workspace-editor .cm-gutters .cm-activeLineGutter {
-  background-color: transparent;
-}
-.workspace-editor .cm-lineNumbers .cm-activeLineGutter {
+.workspace-editor .active-line-number {
   font-weight: 700;
+}
+.workspace-language-status {
+  color: var(--muted);
+  font-size: 0.8125rem;
+  margin: 0;
+  padding: 0.5rem 1rem;
 }
 .workspace-run,
 .workspace-results {

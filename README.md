@@ -161,15 +161,35 @@ screen readers. ErrorState uses safe copy rather than raw exception messages.
 
 After signing in through the local backend, open **Edytor Java** from the profile
 or **Zadania → Suma elementów** from the catalog. The editor at `/dev/workspace`
-has two editable Java files and one read-only file. Switch files to check that edits
-stay in the current view. Choose a demonstration scenario and select
+uses Monaco and has two editable Java files and one read-only file. Switch
+files to check that edits stay in the current view. Choose a demonstration scenario and select
 **Symuluj Run** to inspect the result and public test diagnostics. Editing the
 code after starting a run marks its result as belonging to the previous snapshot.
 
 The development preview simulates execution. The local backend is required to
-sign in. The production build excludes the preview. Real execution requires the application's authenticated
-task and Run endpoints. The browser will use those endpoints, with the backend
-handling Runner access and public test diagnostics.
+sign in. The production build excludes the preview. Real execution requires the
+application's authenticated task and Run endpoints. The browser will use those
+endpoints, with the backend handling Runner access and public test diagnostics.
+
+#### Live Java completions and diagnostics
+
+Download an [Eclipse JDT LS milestone](https://download.eclipse.org/justj/?file=jdtls%2Fmilestones)
+and extract it locally. Use JDT LS 1.57.0 with JDK 21, or match newer JDT LS
+releases with the JDK version they require.
+Set `JDTLS_HOME` to the extracted directory in the frontend's ignored `.env`.
+Optionally set `JDTLS_JAVA_HOME` to the JDK directory, otherwise Vite uses
+`JAVA_HOME` or `java` on PATH. Restart `npm run dev` and open the editor on
+`localhost` or `127.0.0.1`. The status below the editor reports when JDT LS connects.
+
+For a quick check, import `java.util.List`, take a `List<String> values`
+parameter and type `values.` inside the method. Try a missing semicolon or
+an undefined variable to see compiler diagnostics. Without JDT LS, Monaco can
+still suggest words found in the open Java files.
+
+The development server launches JDT LS against a temporary workspace for each
+connection from the same local origin. The language server receives the demo
+source and editor changes. It is separate from Runner execution and is only
+available in local development.
 
 Bootstrap work tracks [web #3](https://github.com/CodeLobbyStudio/codelobby-web/issues/3);
 layout/components track [web #4](https://github.com/CodeLobbyStudio/codelobby-web/issues/4).
