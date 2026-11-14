@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Outlet, Route, Routes } from 'react-router-dom';
 import { session } from '../features/auth/session';
-import { AccountLayout } from './layouts/AccountLayout';
+import { AccountLayout, RequireSession } from './layouts/AccountLayout';
 import { PublicLayout } from './layouts/PublicLayout';
 import { SiteShell } from './layouts/SiteShell';
 import { HomePage } from './pages/HomePage';
@@ -13,6 +13,9 @@ import { LoadingIndicator } from '../shared/components/LoadingIndicator';
 
 const TaskCatalogPreview = import.meta.env.DEV
   ? lazy(() => import('../features/tasks/TaskCatalogPreview'))
+  : null;
+const WorkspacePreview = import.meta.env.DEV
+  ? lazy(() => import('../features/workspace/WorkspacePreview'))
   : null;
 
 export function App() {
@@ -35,22 +38,26 @@ export function App() {
               path="register"
               element={<AuthPage key="register" mode="register" />}
             />
-            {TaskCatalogPreview && (
-              <Route
-                path="dev/tasks"
-                element={
-                  <Suspense
-                    fallback={<LoadingIndicator label="Ładowanie katalogu…" />}
-                  >
-                    <TaskCatalogPreview />
-                  </Suspense>
-                }
-              />
-            )}
             <Route path="*" element={<NotFoundPage />} />
           </Route>
-          <Route element={<AccountLayout />}>
-            <Route path="profile" element={<ProfilePage />} />
+          <Route element={<RequireSession />}>
+            <Route element={<AccountLayout />}>
+              <Route path="profile" element={<ProfilePage />} />
+            </Route>
+            {TaskCatalogPreview && WorkspacePreview && (
+              <Route
+                element={
+                  <Suspense
+                    fallback={<LoadingIndicator label="Ładowanie podglądu…" />}
+                  >
+                    <Outlet />
+                  </Suspense>
+                }
+              >
+                <Route path="dev/tasks" element={<TaskCatalogPreview />} />
+                <Route path="dev/workspace" element={<WorkspacePreview />} />
+              </Route>
+            )}
           </Route>
         </Route>
       </Routes>

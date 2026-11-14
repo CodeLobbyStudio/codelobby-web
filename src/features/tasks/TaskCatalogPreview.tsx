@@ -43,7 +43,11 @@ function TaskList({ tasks, mine }: { tasks: TaskSummary[]; mine: boolean }) {
                   #{task.catalogNumber}
                 </span>
               )}
-              {task.title}
+              {task.catalogNumber === 1 ? (
+                <Link to="/dev/workspace">{task.title}</Link>
+              ) : (
+                task.title
+              )}
             </h2>
             <span
               className={

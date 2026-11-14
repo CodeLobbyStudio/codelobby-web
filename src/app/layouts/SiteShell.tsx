@@ -96,26 +96,35 @@ export function SiteShell() {
                 icon: 'teacher',
                 section: 'dla-prowadzacych',
               },
-            ].map(({ label, icon, section }) => (
-              <Link
-                key={label}
-                to="/"
-                replace={pathname === '/'}
-                state={{ section, navigationItem: label }}
-                aria-current={
-                  pathname === '/' &&
-                  isSectionNavigation &&
-                  state?.navigationItem === label &&
-                  (sectionVisibility?.id !== section ||
-                    sectionVisibility.visible)
-                    ? 'location'
-                    : undefined
-                }
-              >
-                <Icon name={icon} />
-                {label}
-              </Link>
-            ))}
+            ].map(({ label, icon, section }) =>
+              import.meta.env.DEV &&
+              status === 'authenticated' &&
+              icon === 'tasks' ? (
+                <NavLink key={label} to="/dev/tasks">
+                  <Icon name={icon} />
+                  {label}
+                </NavLink>
+              ) : (
+                <Link
+                  key={label}
+                  to="/"
+                  replace={pathname === '/'}
+                  state={{ section, navigationItem: label }}
+                  aria-current={
+                    pathname === '/' &&
+                    isSectionNavigation &&
+                    state?.navigationItem === label &&
+                    (sectionVisibility?.id !== section ||
+                      sectionVisibility.visible)
+                      ? 'location'
+                      : undefined
+                  }
+                >
+                  <Icon name={icon} />
+                  {label}
+                </Link>
+              ),
+            )}
           </nav>
           <div className="header-actions">
             {status === 'authenticated' ? (

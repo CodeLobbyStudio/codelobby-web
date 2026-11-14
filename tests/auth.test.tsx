@@ -12,6 +12,12 @@ import { App } from '../src/app/App';
 import { session } from '../src/features/auth/session';
 import { validateCredentials } from '../src/features/auth/validation';
 
+vi.mock('../src/features/workspace/JavaEditor', () => ({
+  JavaEditor: ({ file }: { file: { path: string } }) => (
+    <textarea aria-label={file.path} />
+  ),
+}));
+
 afterEach(() => {
   vi.unstubAllGlobals();
   session.logout();
@@ -41,6 +47,53 @@ const profile = {
   email: 'profile@example.com',
   createdAt: '2026-10-30T00:00:00Z',
 };
+
+describe('authenticated local previews', () => {
+  it.each(['/dev/tasks', '/dev/workspace'])(
+    'requires a session for direct access to %s',
+    async (path) => {
+      setup(path);
+      expect(
+        await screen.findByRole('heading', { name: 'Logowanie' }),
+      ).toBeVisible();
+      expect(
+        screen.queryByRole('link', { name: 'Edytor Java' }),
+      ).not.toBeInTheDocument();
+    },
+  );
+
+  it('opens the catalog from the profile and enters the example Java task', async () => {
+    const { fetch } = setup();
+    fetch
+      .mockResolvedValueOnce(
+        json({ accessToken: 'test-token', tokenType: 'Bearer' }),
+      )
+      .mockResolvedValueOnce(json(profile));
+    fill();
+    await userEvent.click(screen.getByRole('button', { name: 'Zaloguj się' }));
+    await userEvent.click(
+      await screen.findByRole('link', { name: 'Katalog zadań' }),
+    );
+    await userEvent.click(
+      await screen.findByRole('link', { name: 'Suma elementów' }),
+    );
+    expect(
+      await screen.findByRole('heading', { name: 'Suma elementów' }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole('textbox', { name: 'src/Solution.java' }),
+    ).toBeVisible();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Wyloguj się' }));
+    expect(
+      await screen.findByRole('heading', { level: 1, name: /Koduj/ }),
+    ).toBeVisible();
+    expect(screen.getByRole('link', { name: 'Zadania' })).toHaveAttribute(
+      'href',
+      '/',
+    );
+  });
+});
 
 describe('auth forms', () => {
   describe.each(['example@localhost', '"much.more unusual"@example.com'])(
