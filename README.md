@@ -157,6 +157,19 @@ Alerts announce dynamic content only
 when the caller explicitly opts in with `announce`; static notices do not interrupt
 screen readers. ErrorState uses safe copy rather than raw exception messages.
 
+### Java workspace preview (web #27)
+
+With `npm run dev` running, open `/dev/workspace` to try CodeMirror with two
+editable Java files and one read-only file. Switch files to check that edits
+stay in the current view. Choose a demonstration scenario and select
+**Symuluj Run** to inspect the result and public test diagnostics. Editing the
+code after starting a run marks its result as belonging to the previous snapshot.
+
+The development preview simulates execution and needs no backend. The production
+build excludes the preview. Real execution requires the application's authenticated
+task and Run endpoints. The browser will use those endpoints, with the backend
+handling Runner access and public test diagnostics.
+
 Bootstrap work tracks [web #3](https://github.com/CodeLobbyStudio/codelobby-web/issues/3);
 layout/components track [web #4](https://github.com/CodeLobbyStudio/codelobby-web/issues/4).
 Registration and login track web #16. The shared HTTP transport, protected

@@ -7,6 +7,7 @@ const titles: Record<string, string> = {
   '/login': 'Logowanie',
   '/register': 'Rejestracja',
   '/profile': 'Profil',
+  ...(import.meta.env.DEV ? { '/dev/workspace': 'Podgląd edytora Java' } : {}),
 };
 
 export function RouteEffects() {

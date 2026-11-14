@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { session } from '../features/auth/session';
 import { AccountLayout } from './layouts/AccountLayout';
@@ -9,6 +9,11 @@ import { AuthPage } from '../features/auth/AuthPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { RouteEffects } from './RouteEffects';
+import { LoadingIndicator } from '../shared/components/LoadingIndicator';
+
+const WorkspacePreview = import.meta.env.DEV
+  ? lazy(() => import('../features/workspace/WorkspacePreview'))
+  : null;
 
 export function App() {
   useEffect(() => {
@@ -30,6 +35,18 @@ export function App() {
               path="register"
               element={<AuthPage key="register" mode="register" />}
             />
+            {WorkspacePreview && (
+              <Route
+                path="dev/workspace"
+                element={
+                  <Suspense
+                    fallback={<LoadingIndicator label="Ładowanie edytora…" />}
+                  >
+                    <WorkspacePreview />
+                  </Suspense>
+                }
+              />
+            )}
             <Route path="*" element={<NotFoundPage />} />
           </Route>
           <Route element={<AccountLayout />}>
