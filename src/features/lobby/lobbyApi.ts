@@ -267,9 +267,8 @@ export function positiveId(value: string | undefined) {
 }
 
 const errorLabels: Record<string, string> = {
-  TIMEOUT: 'Serwer nie odpowiedział na czas. Możesz ponowić próbę ręcznie.',
-  RUNNER_TIMEOUT: 'Przekroczono czas oczekiwania na Runnera.',
-  RUN_TIMEOUT: 'Przekroczono czas oczekiwania na Runnera.',
+  TIMEOUT: 'Serwer nie odpowiedział na czas. Operacja może nadal trwać.',
+  RUNNER_TIMEOUT: 'Przekroczono czas oczekiwania. Testy mogą nadal trwać.',
   NETWORK_ERROR: 'Nie można połączyć się z backendem.',
   RUNNER_UNAVAILABLE: 'Runner jest chwilowo niedostępny. Spróbuj ponownie.',
   RUNNER_INVALID_RESPONSE: 'Runner zwrócił nieprawidłowy wynik.',
