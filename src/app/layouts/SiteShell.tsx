@@ -1,16 +1,37 @@
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
-import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import {
+  Link,
+  NavLink,
+  Outlet,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { Icon } from '../../shared/components/Icon';
-import { session } from '../../features/auth/session';
+import { session, useSession } from '../../features/auth/session';
+import { Button } from '../../shared/components/Button';
 
 export function SiteShell() {
-  const accessToken = useSyncExternalStore(
-    session.subscribe,
-    session.getAccessToken,
-    () => null,
-  );
+  const { status } = useSession();
+  const navigate = useNavigate();
   const { pathname, state, key } = useLocation();
+  const logoutPending = useRef(false);
+  useLayoutEffect(() => {
+    if (pathname === '/' && logoutPending.current) {
+      logoutPending.current = false;
+      session.logout();
+    }
+  }, [pathname]);
+
+  function logout() {
+    if (pathname === '/') {
+      session.logout();
+      return;
+    }
+    // Leave the protected route before clearing the session so its login redirect cannot win.
+    logoutPending.current = true;
+    navigate('/', { replace: true });
+  }
   const [initialKey] = useState(key);
   const isSectionNavigation = key !== initialKey;
   const [sectionVisibility, setSectionVisibility] = useState<{
@@ -97,26 +118,37 @@ export function SiteShell() {
             ))}
           </nav>
           <div className="header-actions">
-            {accessToken && (
-              <button
-                type="button"
-                className="notification-button"
-                disabled
-                aria-label="Powiadomienia — w przygotowaniu"
-                title="Powiadomienia — w przygotowaniu"
-              >
-                <Icon name="bell" />
-              </button>
+            {status === 'authenticated' ? (
+              <>
+                <button
+                  type="button"
+                  className="notification-button"
+                  disabled
+                  aria-label="Powiadomienia — w przygotowaniu"
+                  title="Powiadomienia — w przygotowaniu"
+                >
+                  <Icon name="bell" />
+                </button>
+                <NavLink className="login-link" to="/profile">
+                  Profil
+                </NavLink>
+                <Button variant="secondary" onClick={logout}>
+                  Wyloguj się
+                </Button>
+              </>
+            ) : (
+              <>
+                <NavLink className="login-link" to="/login">
+                  Zaloguj się
+                </NavLink>
+                <NavLink
+                  className="button button--primary signup-link"
+                  to="/register"
+                >
+                  Załóż konto
+                </NavLink>
+              </>
             )}
-            <NavLink className="login-link" to="/login">
-              Zaloguj się
-            </NavLink>
-            <NavLink
-              className="button button--primary signup-link"
-              to="/register"
-            >
-              Załóż konto
-            </NavLink>
           </div>
         </div>
       </header>

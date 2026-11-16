@@ -17,10 +17,11 @@ Na start dzielimy frontend głównie po funkcjach, a nie po typie pliku.
 - `src/app/main.tsx` — start Reacta, BrowserRouter i globalny CSS.
 - `src/app/App.tsx` — deklaracje tras i składanie layoutów; treść ekranów znajduje się w osobnych plikach.
 - `src/app/layouts/` — SiteShell (nagłówek, main, stopka), PublicLayout i AccountLayout. Layout konta nie zastępuje autoryzacji z #17.
-- `src/app/pages/` — landing, placeholder profilu i 404. Formularze konta należą do `src/features/auth/`.
+- `src/app/pages/` — landing, chroniony profil i 404. Formularze konta należą do `src/features/auth/`.
 - `src/features/auth/AuthPage.tsx` — formularze, walidacja i stany żądania; wspólne komponenty pól, przycisków i komunikatów.
 - `src/features/auth/api/authApi.ts` — typowane register/login z walidacją odpowiedzi, bez danych demonstracyjnych.
-- `src/features/auth/session.ts` — minimalny punkt przekazania tokenu wyłącznie w pamięci (#16); pełna sesja, `/me` i ochrona tras należą do #17.
+- `src/features/auth/api/profileApi.ts` — typowane pobranie i walidacja odpowiedzi `/api/users/me`.
+- `src/features/auth/session.ts` — weryfikacja i przywracanie sesji przez `/me`, stan dla Reacta i wylogowanie. Na MVP token trafia do `sessionStorage`, a profil pozostaje w pamięci.
 - `src/features/auth/validation.ts` — walidacja emaila i hasła zgodna z ograniczeniami backendu, w tym limit bajtów UTF-8.
 - `src/app/components/` — ilustracja edytora (EditorIllustration) i sekcje landingu, przygotowane według referencji zespołu. Nie są działającym lobby ani edytorem.
 - `src/shared/components/NeonCode.tsx` — wspólny neon SVG dla landingu i formularzy konta: animacja kolorów, zsynchronizowane odbicie i ruch za kursorem.

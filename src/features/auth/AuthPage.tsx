@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '../../shared/components/Button';
 import { Alert } from '../../shared/components/Alert';
 import { FormField } from '../../shared/components/FormField';
 import { NeonCode } from '../../shared/components/NeonCode';
 import { ApiError } from '../../shared/api/http';
 import { authApi } from './api/authApi';
-import { session } from './session';
+import { session, useSession } from './session';
+import { SessionRecovery } from './SessionRecovery';
+import { LoadingIndicator } from '../../shared/components/LoadingIndicator';
 import { validateCredentials } from './validation';
 
 function errorMessage(error: unknown, register: boolean) {
@@ -15,6 +17,8 @@ function errorMessage(error: unknown, register: boolean) {
     return 'Nie udało się wykonać operacji. Spróbuj ponownie.';
   if (error.status >= 500)
     return 'Serwer jest chwilowo niedostępny. Spróbuj ponownie za chwilę.';
+  if (error.code === 'SESSION_REJECTED')
+    return 'Nie udało się potwierdzić sesji. Zaloguj się ponownie.';
   if (error.code === 'INVALID_CREDENTIALS' || error.status === 401)
     return 'Nieprawidłowy email lub hasło.';
   if (error.code === 'EMAIL_ALREADY_EXISTS')
@@ -41,6 +45,7 @@ export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
   const register = mode === 'register';
   const navigate = useNavigate();
   const location = useLocation();
+  const { status } = useSession();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [visible, setVisible] = useState(false);
@@ -49,7 +54,6 @@ export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
   );
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
   const form = useRef<HTMLFormElement>(null);
   const result = useRef<HTMLDivElement>(null);
   const request = useRef<AbortController | null>(null);
@@ -60,8 +64,8 @@ export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
     [],
   );
   useEffect(() => {
-    if (success || error) result.current?.focus();
-  }, [success, error]);
+    if (error) result.current?.focus();
+  }, [error]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -90,9 +94,9 @@ export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
       } else {
         const response = await authApi.login(credentials, controller.signal);
         if (controller.signal.aborted) return;
-        session.login(response.accessToken);
         setPassword('');
-        setSuccess(true);
+        setVisible(false);
+        await session.login(response.accessToken, controller.signal);
       }
     } catch (failure) {
       if (!controller.signal.aborted) {
@@ -106,6 +110,16 @@ export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
     }
   }
 
+  if (status === 'authenticated') return <Navigate to="/profile" replace />;
+  if (status === 'unavailable') return <SessionRecovery />;
+  if (status === 'initializing' && !loading) {
+    return (
+      <div className="auth-layout content-width">
+        <LoadingIndicator label="Sprawdzanie sesji…" />
+      </div>
+    );
+  }
+
   return (
     <section className="auth-layout auth-layout--with-art content-width">
       <div className="auth-panel">
@@ -116,7 +130,7 @@ export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
             ? 'Jedno konto. Wiele wspólnych sesji.'
             : 'Tu rozpocznie się Twoja kolejna sesja.'}
         </p>
-        {!register && location.state?.registered && !success && (
+        {!register && location.state?.registered && (
           <Alert title="Konto zostało utworzone" announce>
             Możesz się teraz zalogować.
           </Alert>
@@ -127,78 +141,74 @@ export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
               {error}
             </Alert>
           )}
-          {success && (
-            <Alert title="Logowanie powiodło się" announce>
-              Profil i widoki konta są jeszcze w przygotowaniu. Odświeżenie
-              strony zakończy tę tymczasową sesję.
-            </Alert>
-          )}
         </div>
-        {!success && (
-          <form
-            ref={form}
-            onSubmit={submit}
-            noValidate
-            className="auth-form"
-            aria-busy={loading}
-          >
+        <form
+          ref={form}
+          onSubmit={submit}
+          noValidate
+          className="auth-form"
+          aria-busy={loading}
+        >
+          <FormField
+            label="Email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            autoCapitalize="none"
+            spellCheck={false}
+            required
+            value={email}
+            disabled={loading}
+            error={errors.email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <div className="auth-password">
             <FormField
-              label="Email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              autoCapitalize="none"
-              spellCheck={false}
+              label="Hasło"
+              name="password"
+              type={visible ? 'text' : 'password'}
+              autoComplete={register ? 'new-password' : 'current-password'}
               required
-              value={email}
+              value={password}
               disabled={loading}
-              error={errors.email}
-              onChange={(e) => setEmail(e.target.value)}
+              error={errors.password}
+              hint={
+                register
+                  ? 'Co najmniej 8 znaków, maksymalnie 72 bajty UTF-8.'
+                  : undefined
+              }
+              onChange={(e) => setPassword(e.target.value)}
             />
-            <div className="auth-password">
-              <FormField
-                label="Hasło"
-                name="password"
-                type={visible ? 'text' : 'password'}
-                autoComplete={register ? 'new-password' : 'current-password'}
-                required
-                value={password}
-                disabled={loading}
-                error={errors.password}
-                hint={
-                  register
-                    ? 'Co najmniej 8 znaków, maksymalnie 72 bajty UTF-8.'
-                    : undefined
-                }
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              <button
-                type="button"
-                className="auth-password-toggle"
-                aria-pressed={visible}
-                disabled={loading}
-                onClick={() => setVisible(!visible)}
-              >
-                {visible ? 'Ukryj hasło' : 'Pokaż hasło'}
-              </button>
-            </div>
-            <Button
-              type="submit"
-              loading={loading}
-              loadingLabel={register ? 'Tworzenie konta…' : 'Logowanie…'}
+            <button
+              type="button"
+              className="auth-password-toggle"
+              aria-pressed={visible}
+              disabled={loading}
+              onClick={() => setVisible(!visible)}
             >
-              {register ? 'Załóż konto' : 'Zaloguj się'}
-            </Button>
-          </form>
-        )}
-        {!success && (
-          <p className="auth-switch">
-            {register ? 'Masz już konto?' : 'Nie masz jeszcze konta?'}{' '}
-            <Link to={register ? '/login' : '/register'}>
-              {register ? 'Przejdź do logowania' : 'Przejdź do rejestracji'}
-            </Link>
-          </p>
-        )}
+              {visible ? 'Ukryj hasło' : 'Pokaż hasło'}
+            </button>
+          </div>
+          <Button
+            type="submit"
+            loading={loading}
+            loadingLabel={
+              register
+                ? 'Tworzenie konta…'
+                : status === 'initializing'
+                  ? 'Sprawdzanie sesji…'
+                  : 'Logowanie…'
+            }
+          >
+            {register ? 'Załóż konto' : 'Zaloguj się'}
+          </Button>
+        </form>
+        <p className="auth-switch">
+          {register ? 'Masz już konto?' : 'Nie masz jeszcze konta?'}{' '}
+          <Link to={register ? '/login' : '/register'}>
+            {register ? 'Przejdź do logowania' : 'Przejdź do rejestracji'}
+          </Link>
+        </p>
         <Link className="text-link auth-home-link" to="/">
           ← Wróć na stronę główną
         </Link>

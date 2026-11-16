@@ -1,7 +1,19 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { Navigate, NavLink, Outlet } from 'react-router-dom';
+import { useSession } from '../../features/auth/session';
+import { SessionRecovery } from '../../features/auth/SessionRecovery';
+import { LoadingIndicator } from '../../shared/components/LoadingIndicator';
 
-// Presentation only: session checks and protected routes belong to issue #17.
 export function AccountLayout() {
+  const { status } = useSession();
+  if (status === 'anonymous') return <Navigate to="/login" replace />;
+  if (status === 'unavailable') return <SessionRecovery />;
+  if (status === 'initializing') {
+    return (
+      <div className="account-layout content-width">
+        <LoadingIndicator label="Sprawdzanie sesji…" />
+      </div>
+    );
+  }
   return (
     <div className="account-layout content-width">
       <aside className="account-sidebar" aria-label="Część konta">

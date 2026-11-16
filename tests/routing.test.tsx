@@ -182,30 +182,25 @@ describe('application routing', () => {
     }
   });
 
-  it('makes the account placeholder explicit without displaying user data', () => {
+  it('redirects an anonymous visitor from the profile to login', () => {
     renderRoute('/profile');
-    expect(screen.getByText('Podgląd części konta')).toBeInTheDocument();
     expect(
-      screen.getByRole('navigation', { name: 'Nawigacja konta' }),
+      screen.getByRole('heading', { name: 'Logowanie' }),
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole('button', { name: 'Wyloguj' }),
+      screen.queryByRole('navigation', { name: 'Nawigacja konta' }),
     ).not.toBeInTheDocument();
   });
 
   it.each([
     ['/login', 'Logowanie'],
     ['/register', 'Rejestracja'],
-    ['/profile', 'Profil'],
   ])('opens %s directly', (path, title) => {
     renderRoute(path);
     expect(
       screen.getByRole('heading', { level: 1, name: title }),
     ).toBeInTheDocument();
-    if (path !== '/profile')
-      expect(
-        screen.getByRole('textbox', { name: 'Email' }),
-      ).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: 'Email' })).toBeInTheDocument();
   });
 
   it('shows 404 for unknown URLs and lets the user return home', async () => {
