@@ -80,7 +80,9 @@ async function requestJson(
           ? data.code
           : 'HTTP_ERROR';
       const message =
-        isRecord(data) && typeof data.message === 'string' ? data.message : code;
+        isRecord(data) && typeof data.message === 'string'
+          ? data.message
+          : code;
       throw new ApiError(code, response.status, message);
     }
     return data;

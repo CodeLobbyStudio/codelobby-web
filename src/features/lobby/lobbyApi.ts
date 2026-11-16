@@ -78,7 +78,9 @@ function array<T>(value: unknown, read: (item: unknown) => T): T[] {
 }
 
 function role(value: unknown): LobbyRole {
-  return value === 'HOST' || value === 'PARTICIPANT' ? value : invalidResponse();
+  return value === 'HOST' || value === 'PARTICIPANT'
+    ? value
+    : invalidResponse();
 }
 
 function status(value: unknown): LobbyStatus {
@@ -132,7 +134,10 @@ function workspaceFile(value: unknown): WorkspaceFile {
 function workspace(value: unknown): Workspace {
   const data = record(value);
   const files = array(data.files, workspaceFile);
-  if (data.language !== 'JAVA' || !files.some((file) => file.role === 'EDITABLE')) {
+  if (
+    data.language !== 'JAVA' ||
+    !files.some((file) => file.role === 'EDITABLE')
+  ) {
     return invalidResponse();
   }
   return {
@@ -281,6 +286,8 @@ export function lobbyError(error: unknown) {
   if (!(error instanceof ApiError)) return 'Nie udało się wykonać operacji.';
   return (
     errorLabels[error.code] ??
-    (error.message === error.code ? 'Nie udało się wykonać operacji.' : error.message)
+    (error.message === error.code
+      ? 'Nie udało się wykonać operacji.'
+      : error.message)
   );
 }

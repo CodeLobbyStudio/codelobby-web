@@ -52,7 +52,10 @@ export function useLobbyResource<T>(
       } catch (failure) {
         if (controller.signal.aborted) return;
         setError(lobbyError(failure));
-        if (failure instanceof ApiError && [401, 403, 404].includes(failure.status)) {
+        if (
+          failure instanceof ApiError &&
+          [401, 403, 404].includes(failure.status)
+        ) {
           setData(undefined);
           return;
         }

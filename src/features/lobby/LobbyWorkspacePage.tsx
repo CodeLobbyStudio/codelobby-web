@@ -98,7 +98,8 @@ function WorkspaceEditor({
 
   const stale =
     lastRun?.snapshot.files.some(({ path, content }) => {
-      const current = drafts[path] ?? data.files.find((f) => f.path === path)?.content;
+      const current =
+        drafts[path] ?? data.files.find((f) => f.path === path)?.content;
       return current !== content;
     }) ?? false;
 
@@ -153,7 +154,11 @@ function WorkspaceEditor({
               <Alert title={action.error} variant="error" announce />
             )}
             {lastRun && (
-              <RunResults outcome={lastRun.outcome} tests={data.tests} stale={stale} />
+              <RunResults
+                outcome={lastRun.outcome}
+                tests={data.tests}
+                stale={stale}
+              />
             )}
           </div>
         </section>

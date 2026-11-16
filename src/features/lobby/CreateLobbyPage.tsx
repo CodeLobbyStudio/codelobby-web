@@ -229,7 +229,11 @@ export function CreateLobbyPage() {
         ) : (
           <p role="status">Zadanie #{taskId} zostało zapisane.</p>
         )}
-        <Button type="submit" loading={action.pending} loadingLabel="Tworzenie…">
+        <Button
+          type="submit"
+          loading={action.pending}
+          loadingLabel="Tworzenie…"
+        >
           Utwórz lobby
         </Button>
       </form>

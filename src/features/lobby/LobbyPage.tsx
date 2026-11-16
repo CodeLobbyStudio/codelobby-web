@@ -57,9 +57,7 @@ function LobbyDetails({ id }: { id: number }) {
       <h1>{lobby.name}</h1>
       <p role="status">{statusLabels[lobby.status]}</p>
       {error && <Alert title={error} variant="error" announce />}
-      {action.error && (
-        <Alert title={action.error} variant="error" announce />
-      )}
+      {action.error && <Alert title={action.error} variant="error" announce />}
       <dl className="lobby-metadata">
         <div>
           <dt>Języki</dt>

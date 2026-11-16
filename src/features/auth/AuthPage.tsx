@@ -216,10 +216,7 @@ export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
         </form>
         <p className="auth-switch">
           {register ? 'Masz już konto?' : 'Nie masz jeszcze konta?'}{' '}
-          <Link
-            to={register ? '/login' : '/register'}
-            state={{ returnTo }}
-          >
+          <Link to={register ? '/login' : '/register'} state={{ returnTo }}>
             {register ? 'Przejdź do logowania' : 'Przejdź do rejestracji'}
           </Link>
         </p>
