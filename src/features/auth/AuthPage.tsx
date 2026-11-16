@@ -12,6 +12,13 @@ import { SessionRecovery } from './SessionRecovery';
 import { LoadingIndicator } from '../../shared/components/LoadingIndicator';
 import { validateCredentials } from './validation';
 
+function lobbyReturnPath(value: unknown) {
+  return typeof value === 'string' &&
+    /^\/lobbies\/(?:new|join|\d+(?:\/tasks\/\d+)?)\/?(?:\?[^#]*)?$/.test(value)
+    ? value
+    : '/profile';
+}
+
 function errorMessage(error: unknown, register: boolean) {
   if (!(error instanceof ApiError))
     return 'Nie udało się wykonać operacji. Spróbuj ponownie.';
@@ -45,6 +52,7 @@ export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
   const register = mode === 'register';
   const navigate = useNavigate();
   const location = useLocation();
+  const returnTo = lobbyReturnPath(location.state?.returnTo);
   const { status } = useSession();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -90,7 +98,10 @@ export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
         await authApi.register(credentials, controller.signal);
         if (controller.signal.aborted) return;
         setPassword('');
-        navigate('/login', { replace: true, state: { registered: true } });
+        navigate('/login', {
+          replace: true,
+          state: { registered: true, returnTo },
+        });
       } else {
         const response = await authApi.login(credentials, controller.signal);
         if (controller.signal.aborted) return;
@@ -110,7 +121,7 @@ export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
     }
   }
 
-  if (status === 'authenticated') return <Navigate to="/profile" replace />;
+  if (status === 'authenticated') return <Navigate to={returnTo} replace />;
   if (status === 'unavailable') return <SessionRecovery />;
   if (status === 'initializing' && !loading) {
     return (
@@ -205,7 +216,7 @@ export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
         </form>
         <p className="auth-switch">
           {register ? 'Masz już konto?' : 'Nie masz jeszcze konta?'}{' '}
-          <Link to={register ? '/login' : '/register'}>
+          <Link to={register ? '/login' : '/register'} state={{ returnTo }}>
             {register ? 'Przejdź do logowania' : 'Przejdź do rejestracji'}
           </Link>
         </p>

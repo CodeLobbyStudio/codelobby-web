@@ -221,3 +221,25 @@ See [docs/STRUKTURA.md](docs/STRUKTURA.md) for file responsibilities and the sha
 [CodeLobby CONTRIBUTING](https://github.com/CodeLobbyStudio/.github/blob/main/CONTRIBUTING.md)
 for branch naming and review rules. This repo inherits that organization guide;
 there is no separate repository-specific `CONTRIBUTING.md`.
+
+## Test the Java lobby flow
+
+1. Start PostgreSQL, Judge0 and Runner, then start the backend from
+   `feat/java-lobby-flow`. Follow the
+   [backend setup and smoke test](https://github.com/CodeLobbyStudio/codelobby-backend/blob/feat/java-lobby-flow/docs/JAVA_LOBBY_FLOW.md).
+   Start the web app with `npm ci` and `npm run dev`. The Vite proxy targets
+   `http://localhost:8080` by default. Set `API_PROXY_TARGET` if needed.
+2. Open <http://localhost:5173> and sign in as the host. Choose **Utwórz lobby**.
+   Give the lobby a name and keep the pre-filled Java task to try the sample.
+3. Open the invitation link in a separate browser profile or an incognito
+   window. Sign in with a second account, then choose **Dołącz**.
+4. As host choose **Rozpocznij sesję**. As participant, open the task and click
+   **Run**. The starter gives a Wrong Answer. In `src/Solution.java`, replace
+   `return 0;` with `return Helpers.count(text);` and run again. The public
+   test should pass. Invalid Java should show a compilation error.
+5. As host choose **Zakończ sesję**. Verify that a subsequent Run is rejected.
+
+The form creates one custom Java task and then a lobby. If lobby creation fails
+after saving the task, retry from the same form to reuse the saved task. Run
+sends the editable files and the workspace version to the backend. Keep
+`CODELOBBY_INTERNAL_KEY` in the backend and Runner environments.
