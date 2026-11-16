@@ -4,10 +4,9 @@ import { java } from '@codemirror/lang-java';
 import { EditorState } from '@codemirror/state';
 import { oneDark } from '@codemirror/theme-one-dark';
 import { EditorView } from '@codemirror/view';
-import type { WorkspaceFile } from './demoTask';
 
 type Props = {
-  file: WorkspaceFile;
+  file: { path: string; role: 'EDITABLE' | 'READ_ONLY' };
   content: string;
   onChange: (path: string, content: string) => void;
 };

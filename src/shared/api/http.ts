@@ -10,8 +10,9 @@ export class ApiError extends Error {
   constructor(
     public readonly code: string,
     public readonly status = 0,
+    message = code,
   ) {
-    super(code);
+    super(message);
     this.name = 'ApiError';
   }
 }
@@ -21,8 +22,9 @@ export function postJson(
   body: unknown,
   signal?: AbortSignal,
   timeoutMs = 15000,
+  token?: string,
 ) {
-  return requestJson(path, { method: 'POST', body }, signal, timeoutMs);
+  return requestJson(path, { method: 'POST', body, token }, signal, timeoutMs);
 }
 
 export function getJson(path: string, token?: string, signal?: AbortSignal) {
@@ -32,7 +34,8 @@ export function getJson(path: string, token?: string, signal?: AbortSignal) {
 async function requestJson(
   path: string,
   request:
-    { method: 'POST'; body: unknown } | { method: 'GET'; token?: string },
+    | { method: 'POST'; body: unknown; token?: string }
+    | { method: 'GET'; token?: string },
   signal?: AbortSignal,
   timeoutMs = 15000,
 ): Promise<unknown> {
@@ -52,7 +55,8 @@ async function requestJson(
         Accept: 'application/json',
         ...(request.method === 'POST'
           ? { 'Content-Type': 'application/json' }
-          : request.token && { Authorization: `Bearer ${request.token}` }),
+          : {}),
+        ...(request.token && { Authorization: `Bearer ${request.token}` }),
       },
       body:
         request.method === 'POST' ? JSON.stringify(request.body) : undefined,
@@ -75,7 +79,9 @@ async function requestJson(
         isRecord(data) && typeof data.code === 'string'
           ? data.code
           : 'HTTP_ERROR';
-      throw new ApiError(code, response.status);
+      const message =
+        isRecord(data) && typeof data.message === 'string' ? data.message : code;
+      throw new ApiError(code, response.status, message);
     }
     return data;
   } catch (error) {

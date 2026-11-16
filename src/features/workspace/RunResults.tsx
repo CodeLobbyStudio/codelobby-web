@@ -8,6 +8,7 @@ const labels = new Map([
   ['MEMORY_LIMIT_EXCEEDED', 'Przekroczony limit pamięci'],
   ['RUNTIME_ERROR', 'Błąd wykonania'],
   ['OUTPUT_LIMIT_EXCEEDED', 'Przekroczony limit danych wyjściowych'],
+  ['EXECUTION_ERROR', 'Błąd uruchomienia testów'],
   ['NOT_RUN', 'Nie uruchomiono'],
 ]);
 

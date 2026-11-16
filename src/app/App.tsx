@@ -10,6 +10,13 @@ import { ProfilePage } from './pages/ProfilePage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { RouteEffects } from './RouteEffects';
 import { LoadingIndicator } from '../shared/components/LoadingIndicator';
+import { CreateLobbyPage } from '../features/lobby/CreateLobbyPage';
+import { JoinLobbyPage } from '../features/lobby/JoinLobbyPage';
+import { LobbyPage } from '../features/lobby/LobbyPage';
+
+const LobbyWorkspacePage = lazy(
+  () => import('../features/lobby/LobbyWorkspacePage'),
+);
 
 const WorkspacePreview = import.meta.env.DEV
   ? lazy(() => import('../features/workspace/WorkspacePreview'))
@@ -51,6 +58,19 @@ export function App() {
           </Route>
           <Route element={<AccountLayout />}>
             <Route path="profile" element={<ProfilePage />} />
+            <Route path="lobbies/new" element={<CreateLobbyPage />} />
+            <Route path="lobbies/join" element={<JoinLobbyPage />} />
+            <Route path="lobbies/:lobbyId" element={<LobbyPage />} />
+            <Route
+              path="lobbies/:lobbyId/tasks/:taskId"
+              element={
+                <Suspense
+                  fallback={<LoadingIndicator label="Ładowanie edytora…" />}
+                >
+                  <LobbyWorkspacePage />
+                </Suspense>
+              }
+            />
           </Route>
         </Route>
       </Routes>

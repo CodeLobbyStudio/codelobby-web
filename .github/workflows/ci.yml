@@ -39,7 +39,12 @@ jobs:
         run: npm run lint
 
       - name: Check formatting
-        run: npm run format:check
+        run: |
+          if ! npm run format:check; then
+            npm run format
+            git --no-pager diff
+            exit 1
+          fi
 
       - name: Test
         run: npm test
