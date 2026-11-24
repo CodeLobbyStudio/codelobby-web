@@ -24,13 +24,13 @@ export function RunResults({
   }
 
   const { result } = outcome;
-  const firstWrongAnswer = result.testResults.find(
-    (test) => test.status === 'WRONG_ANSWER' && test.actualOutput != null,
-  );
   return (
     <>
       <p className="workspace-verdict" role="status">
-        <strong>
+        <strong
+          className="workspace-result-status"
+          data-verdict={result.status}
+        >
           {result.status === 'ACCEPTED'
             ? 'Wszystkie testy zaliczone'
             : runVerdictLabel(result.status)}
@@ -56,9 +56,15 @@ export function RunResults({
         const title =
           tests.find(({ id }) => id === test.testId)?.title ?? test.testId;
         return (
-          <details key={test.testId} open={test === firstWrongAnswer}>
+          <details key={test.testId}>
             <summary>
-              {title} · {runVerdictLabel(test.status)}
+              {title} ·{' '}
+              <strong
+                className="workspace-result-status"
+                data-verdict={test.status}
+              >
+                {runVerdictLabel(test.status)}
+              </strong>
             </summary>
             {fields.every(([, value]) => value == null) ? (
               <p>Szczegóły diagnostyczne są niedostępne.</p>

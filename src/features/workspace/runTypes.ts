@@ -25,7 +25,7 @@ export type RunOutcome =
 
 const verdictLabels = new Map([
   ['ACCEPTED', 'Zaliczony'],
-  ['WRONG_ANSWER', 'Błędny wynik'],
+  ['WRONG_ANSWER', 'Błąd'],
   ['COMPILATION_ERROR', 'Błąd kompilacji'],
   ['TIME_LIMIT_EXCEEDED', 'Przekroczony limit czasu'],
   ['MEMORY_LIMIT_EXCEEDED', 'Przekroczony limit pamięci'],

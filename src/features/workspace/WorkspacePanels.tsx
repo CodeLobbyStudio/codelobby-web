@@ -17,9 +17,9 @@ const panels = {
     target: 'workspace-project-panel',
   },
   results: {
-    initial: 16,
-    min: 10,
-    max: 48,
+    initial: 33,
+    min: 15,
+    max: 75,
     label: 'Wysokość wyników testów',
     target: 'workspace-results-panel',
   },
@@ -41,6 +41,7 @@ export function WorkspacePanels({
   });
   const drag = useRef<Drag | null>(null);
   const grid = useRef<HTMLDivElement>(null);
+  const sidebar = useRef<HTMLDivElement>(null);
 
   function resize(panel: Panel, value: number) {
     const { min, max } = panels[panel];
@@ -64,8 +65,9 @@ export function WorkspacePanels({
         aria-valuenow={Math.round(sizes[panel])}
         aria-valuetext={`${Math.round(sizes[panel])}%`}
         onPointerDown={(event) => {
-          if (event.button !== 0 || !grid.current) return;
-          const bounds = grid.current.getBoundingClientRect();
+          const container = horizontal ? sidebar.current : grid.current;
+          if (event.button !== 0 || !container) return;
+          const bounds = container.getBoundingClientRect();
           drag.current = {
             panel,
             start: horizontal ? event.clientY : event.clientX,
@@ -113,13 +115,15 @@ export function WorkspacePanels({
 
   return (
     <div ref={grid} className="workspace-ide-layout" style={styles}>
-      {brief}
+      <div ref={sidebar} className="workspace-sidebar">
+        {brief}
+        {divider('results')}
+        {results}
+      </div>
       {divider('brief')}
       {project}
       {divider('project')}
       {editor}
-      {divider('results')}
-      {results}
     </div>
   );
 }

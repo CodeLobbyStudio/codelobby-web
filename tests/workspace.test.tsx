@@ -195,7 +195,7 @@ it('maps case names by ID and displays numeric zero while omitting null diagnost
               status: 'WRONG_ANSWER',
               input: null,
               expectedOutput: 0,
-              actualOutput: null,
+              actualOutput: 2,
             },
             {
               testId: 'positive',
@@ -209,10 +209,18 @@ it('maps case names by ID and displays numeric zero while omitting null diagnost
       }}
     />,
   );
-  fireEvent.click(screen.getByText('Pusta tablica · Błędny wynik'));
-  fireEvent.click(screen.getByText('Liczby dodatnie · Nie uruchomiono'));
+  const wrongTest = screen.getByText('Pusta tablica ·');
+  const skippedTest = screen.getByText('Liczby dodatnie ·');
+  expect(wrongTest).toHaveTextContent('Pusta tablica · Błąd');
+  expect(skippedTest).toHaveTextContent('Liczby dodatnie · Nie uruchomiono');
+  expect(wrongTest.closest('details')).not.toHaveAttribute('open');
+  expect(skippedTest.closest('details')).not.toHaveAttribute('open');
+  fireEvent.click(wrongTest);
+  fireEvent.click(skippedTest);
+  expect(wrongTest.closest('details')).toHaveAttribute('open');
   expect(screen.getByText('0', { exact: true })).toBeVisible();
-  expect(screen.queryByText('Otrzymany wynik')).not.toBeInTheDocument();
+  expect(screen.getByText('Otrzymany wynik')).toBeVisible();
+  expect(screen.queryByText('Wejście')).not.toBeInTheDocument();
   expect(
     screen.getByText('Szczegóły diagnostyczne są niedostępne.'),
   ).toBeVisible();
@@ -220,7 +228,7 @@ it('maps case names by ID and displays numeric zero while omitting null diagnost
 
 it.each([
   ['ACCEPTED', 'Wszystkie testy zaliczone', 2],
-  ['WRONG_ANSWER', 'Błędny wynik', 1],
+  ['WRONG_ANSWER', 'Błąd', 1],
   ['COMPILATION_ERROR', 'Błąd kompilacji', 0],
   ['TIME_LIMIT_EXCEEDED', 'Przekroczony limit czasu', 0],
 ] as const)(
