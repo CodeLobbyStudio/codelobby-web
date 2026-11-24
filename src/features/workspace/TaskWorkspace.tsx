@@ -295,6 +295,9 @@ export function TaskWorkspace({
             {selected?.role === 'EDITABLE' && (
               <div className="workspace-shortcuts">
                 <span>
+                  Szukaj w pliku <kbd>Ctrl+F</kbd>
+                </span>
+                <span>
                   Podpowiedzi <kbd>Ctrl+Spacja</kbd>
                 </span>
                 <span>
