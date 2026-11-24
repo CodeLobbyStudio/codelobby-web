@@ -1,12 +1,16 @@
 import react from '@vitejs/plugin-react';
 import { loadEnv } from 'vite';
 import { defineConfig } from 'vitest/config';
+import { javaLanguageServer } from './scripts/javaLanguageServer.ts';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
 
   return {
-    plugins: [react()],
+    plugins: [
+      react(),
+      javaLanguageServer(env.JDTLS_HOME, env.JDTLS_JAVA_HOME || env.JAVA_HOME),
+    ],
     server: {
       port: 5173,
       strictPort: true,

@@ -16,6 +16,8 @@ const shapes: Record<string, ReactNode> = {
   send: <path d="m3 3 18 9-18 9 4-9-4-9Zm4 9h14" />,
   chevron: <path d="m6 9 6 6 6-6" />,
   close: <path d="m6 6 12 12M18 6 6 18" />,
+  folder: <path d="M3 6h7l2 2h9v11H3z" />,
+  lock: <path d="M6 10h12v10H6zM8 10V7a4 4 0 0 1 8 0v3m-4 4v2" />,
   checkCircle: (
     <>
       <circle cx="12" cy="12" r="9" />

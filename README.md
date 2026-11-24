@@ -157,18 +157,46 @@ Alerts announce dynamic content only
 when the caller explicitly opts in with `announce`; static notices do not interrupt
 screen readers. ErrorState uses safe copy rather than raw exception messages.
 
-### Java workspace preview (web #27)
+### Java practice in the development catalog
 
-With `npm run dev` running, open `/dev/workspace` to try CodeMirror with two
-editable Java files and one read-only file. Switch files to check that edits
-stay in the current view. Choose a demonstration scenario and select
-**Symuluj Run** to inspect the result and public test diagnostics. Editing the
-code after starting a run marks its result as belonging to the previous snapshot.
+After signing in through the local backend, open **Edytor Java** from the profile
+or **Zadania → Suma elementów** from the catalog. The editor at `/dev/workspace`
+uses Monaco and has two editable Java files and one read-only file. Switch
+files to check that edits stay in the current browser tab. Select **Run** to
+execute the public Java tests. The starter gives 1/2; a correct implementation
+gives 2/2. Editing code after starting a run marks its result as belonging to
+the previous snapshot.
 
-The development preview simulates execution and needs no backend. The production
-build excludes the preview. Real execution requires the application's authenticated
-task and Run endpoints. The browser will use those endpoints, with the backend
-handling Runner access and public test diagnostics.
+Practice runs use the same Runner and Judge0 as lobby runs. Start the backend
+with the practice endpoints `/api/tasks/practice/sum/workspace` and
+`/api/tasks/practice/sum/run`. The backend supplies the starter files and
+public test configuration. Practice runs work without a lobby. The production
+web build excludes the development catalog and its editor route.
+
+#### Live Java completions and diagnostics
+
+Download an [Eclipse JDT LS milestone](https://download.eclipse.org/justj/?file=jdtls%2Fmilestones)
+and extract it locally. Use JDT LS 1.57.0 with JDK 21, or match newer JDT LS
+releases with the JDK version they require.
+Set `JDTLS_HOME` to the extracted directory in the frontend's ignored `.env`.
+Optionally set `JDTLS_JAVA_HOME` to the JDK directory, otherwise Vite uses
+`JAVA_HOME` or `java` on PATH. Restart `npm run dev` and open the editor on
+`localhost` or `127.0.0.1`. The status below the editor reports when JDT LS connects.
+
+For a quick check, import `java.util.List`, take a `List<String> values`
+parameter and type `values.` inside the method. Try a missing semicolon or
+an undefined variable to see compiler diagnostics. Without JDT LS, Monaco can
+still suggest words found in the open Java files.
+
+In both the catalog preview and the lobby workspace, press **Shift+Alt+F** in
+an editable file to format the whole Java document. Formatting requires JDT LS.
+
+The development server launches JDT LS against a temporary workspace for each
+connection from the same local origin. It receives the Java files available
+in the preview or lobby editor, including read-only helpers, and tracks editor
+changes. Keep package folders aligned with package declarations. JDT LS is
+separate from Runner and available only in local development. The task creation
+form uses Monaco with local word suggestions.
 
 Bootstrap work tracks [web #3](https://github.com/CodeLobbyStudio/codelobby-web/issues/3);
 layout/components track [web #4](https://github.com/CodeLobbyStudio/codelobby-web/issues/4).
@@ -221,3 +249,35 @@ See [docs/STRUKTURA.md](docs/STRUKTURA.md) for file responsibilities and the sha
 [CodeLobby CONTRIBUTING](https://github.com/CodeLobbyStudio/.github/blob/main/CONTRIBUTING.md)
 for branch naming and review rules. This repo inherits that organization guide;
 there is no separate repository-specific `CONTRIBUTING.md`.
+
+## Test the Java lobby flow
+
+1. Start PostgreSQL, Judge0 and Runner, then start a backend revision that
+   includes the lobby workspace, Run, submission, progress and review endpoints
+   and applies the submission migrations through V15. The lobby API builds on
+   [backend PR #60](https://github.com/CodeLobbyStudio/codelobby-backend/pull/60).
+   Start the web app with `npm ci` and `npm run dev`. The Vite proxy targets
+   `http://localhost:8080` by default. Set `API_PROXY_TARGET` if needed.
+2. Open <http://localhost:5173> and sign in as the host. Choose **Utwórz lobby**.
+   Give the lobby a name and keep the pre-filled Java task to try the sample.
+3. Open the invitation link in a separate browser profile or an incognito
+   window. Sign in with a second account, then choose **Dołącz**.
+4. As host choose **Rozpocznij sesję**. As participant, open the task and click
+   **Run**. The starter gives a Wrong Answer. In `src/Solution.java`, replace
+   `return 0;` with `return Helpers.count(text);` and run again. The public
+   test should pass. Invalid Java should show a compilation error.
+5. Open a read-only helper in a second tab, switch back to `Solution.java`,
+   and refresh. The original tab of the browser should keep your edits.
+   On a desktop viewport, drag a panel divider or focus it and press an arrow
+   key to resize the panel.
+6. As host verify that the participant's task becomes **Otwarto**. As
+   participant choose **Oddaj rozwiązanie**, cancel once, then confirm. Verify
+   that **Wysłane** replaces the workspace link and the task cannot be reopened.
+7. As host choose **Zakończ sesję**. Reopen the session from **Moje lobby**,
+   open the code under **Oddane rozwiązania** and choose **Sprawdź testy jawne**.
+   Verify that the public test result and measured CPU time remain after reload.
+
+The form creates one custom Java task and then a lobby. If lobby creation fails
+after saving the task, retry from the same form to reuse the saved task. Run
+sends the editable files and the workspace version to the backend. Keep
+`CODELOBBY_INTERNAL_KEY` in the backend and Runner environments.

@@ -36,15 +36,13 @@ const participantStates = {
 
 function highlight(line: string) {
   return line
-    .split(
-      /(\b(?:def|if|not|return|for|in|else|range|len|max)\b|\b\d+\b|najdluzszy_podciag)/g,
-    )
+    .split(/(\b(?:static|int|if|return|for|else)\b|\b\d+\b|najdluzszyPodciag)/g)
     .map((token, i) => {
       const className = /^\d+$/.test(token)
         ? 'syntax-number'
-        : token === 'najdluzszy_podciag'
+        : token === 'najdluzszyPodciag'
           ? 'syntax-function'
-          : /^(def|if|not|return|for|in|else|range|len|max)$/.test(token)
+          : /^(static|int|if|return|for|else)$/.test(token)
             ? 'syntax-keyword'
             : '';
       return (
@@ -116,9 +114,7 @@ function EditorFrame({ expanded = false }: { expanded?: boolean }) {
         <ProblemPreview interactive={expanded} />
         <div className="coding-pane">
           <div className="editor-toolbar">
-            <span className="language-name">
-              🐍 Python 3.11 <Icon name="chevron" />
-            </span>
+            <span className="language-name">Java 21</span>
             <PreviewControl className="preview-run" {...controlProps}>
               <Icon name="play" /> Uruchom
             </PreviewControl>
@@ -143,10 +139,7 @@ function EditorFrame({ expanded = false }: { expanded?: boolean }) {
             </div>
             {testDurations.map((time, i) => (
               <div className="test-result" key={time}>
-                <span>
-                  Test {i + 1}
-                  {i === 3 ? ' (ukryty)' : ''}
-                </span>
+                <span>Test {i + 1}</span>
                 <span className="test-pass">
                   <Icon name="checkCircle" className="test-check" />
                   Zaliczony
@@ -236,7 +229,7 @@ export function EditorIllustration() {
   const dialog = useRef<HTMLDialogElement>(null);
   const trigger = useRef<HTMLDivElement>(null);
   const description =
-    'Ilustracja planowanego lobby CodeLobby: opis zadania, edytor Python, testy, uczestnicy i ranking. To statyczny podgląd, nie aktywna sesja.';
+    'Ilustracja planowanego lobby CodeLobby z opisem zadania, edytorem Javy, testami, uczestnikami i rankingiem.';
   return (
     <div className="editor-illustration">
       <div

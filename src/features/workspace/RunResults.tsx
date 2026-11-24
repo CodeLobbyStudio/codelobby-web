@@ -1,15 +1,5 @@
 import type { RunOutcome } from './runTypes';
-
-const labels = new Map([
-  ['ACCEPTED', 'Zaliczony'],
-  ['WRONG_ANSWER', 'Błędny wynik'],
-  ['COMPILATION_ERROR', 'Błąd kompilacji'],
-  ['TIME_LIMIT_EXCEEDED', 'Przekroczony limit czasu'],
-  ['MEMORY_LIMIT_EXCEEDED', 'Przekroczony limit pamięci'],
-  ['RUNTIME_ERROR', 'Błąd wykonania'],
-  ['OUTPUT_LIMIT_EXCEEDED', 'Przekroczony limit danych wyjściowych'],
-  ['NOT_RUN', 'Nie uruchomiono'],
-]);
+import { runVerdictLabel } from './runTypes';
 
 function diagnostic(value: unknown) {
   return typeof value === 'string' ? value : JSON.stringify(value);
@@ -37,10 +27,13 @@ export function RunResults({
   return (
     <>
       <p className="workspace-verdict" role="status">
-        <strong>
+        <strong
+          className="workspace-result-status"
+          data-verdict={result.status}
+        >
           {result.status === 'ACCEPTED'
             ? 'Wszystkie testy zaliczone'
-            : (labels.get(result.status) ?? result.status)}
+            : runVerdictLabel(result.status)}
         </strong>
         <span>
           {result.passedTests} / {result.totalTests} zaliczone
@@ -65,7 +58,13 @@ export function RunResults({
         return (
           <details key={test.testId}>
             <summary>
-              {title} · {labels.get(test.status) ?? test.status}
+              {title} ·{' '}
+              <strong
+                className="workspace-result-status"
+                data-verdict={test.status}
+              >
+                {runVerdictLabel(test.status)}
+              </strong>
             </summary>
             {fields.every(([, value]) => value == null) ? (
               <p>Szczegóły diagnostyczne są niedostępne.</p>

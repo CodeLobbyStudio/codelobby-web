@@ -13,7 +13,7 @@ export function NotFoundPage() {
         <br />
         Wróć na początek i wybierz swoją drogę.
       </p>
-      <Link className="button button--primary" to="/">
+      <Link className="codelobby-button button--primary" to="/">
         Wróć na stronę główną <span aria-hidden="true">→</span>
       </Link>
     </section>

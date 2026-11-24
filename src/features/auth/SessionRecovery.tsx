@@ -4,7 +4,7 @@ import { session } from './session';
 
 export function SessionRecovery() {
   return (
-    <section className="auth-layout content-width">
+    <section className="auth-layout content-width session-recovery">
       <h1>Sprawdzenie sesji</h1>
       <Alert title="Nie udało się potwierdzić sesji" variant="error" announce>
         Spróbuj ponownie lub wróć do logowania.

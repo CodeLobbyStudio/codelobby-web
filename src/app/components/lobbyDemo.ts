@@ -1,20 +1,20 @@
 /** Shared illustration data, not an API response or an active lobby. */
 export const demoSource = [
-  'def najdluzszy_podciag(arr):',
-  '    if not arr:',
-  '        return 0',
+  'static int najdluzszyPodciag(int[] arr) {',
+  '    if (arr.length == 0) return 0;',
+  '    int best = 1, current = 1;',
   '',
-  '    best = 1',
-  '    current = 1',
+  '    for (int i = 1; i < arr.length; i++) {',
+  '        if (arr[i] > arr[i - 1]) {',
+  '            current++;',
+  '        } else {',
+  '            current = 1;',
+  '        }',
+  '        best = Math.max(best, current);',
+  '    }',
   '',
-  '    for i in range(1, len(arr)):',
-  '        if arr[i] > arr[i - 1]:',
-  '            current += 1',
-  '        else:',
-  '            best = max(best, current)',
-  '            current = 1',
-  '',
-  '    return max(best, current)',
+  '    return best;',
+  '}',
 ];
 export const demoTestDurations = [0, 8, 16, 28];
 export const demoCases = [
