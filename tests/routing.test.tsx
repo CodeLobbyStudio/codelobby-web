@@ -22,7 +22,10 @@ describe('application routing', () => {
             {
               pathname: '/',
               key: 'saved-entry',
-              state: { section: 'jak-to-dziala', navigationItem: 'Lobby' },
+              state: {
+                section: 'jak-to-dziala',
+                navigationItem: 'Jak to działa',
+              },
             },
           ]}
         >
@@ -30,7 +33,7 @@ describe('application routing', () => {
         </MemoryRouter>
       </StrictMode>,
     );
-    const lobby = screen.getByRole('link', { name: 'Lobby' });
+    const lobby = screen.getByRole('link', { name: 'Jak to działa' });
     expect(window.scrollTo).toHaveBeenLastCalledWith({
       top: 0,
       behavior: 'instant',
@@ -58,7 +61,7 @@ describe('application routing', () => {
     );
     try {
       renderRoute('/');
-      const lobby = screen.getByRole('link', { name: 'Lobby' });
+      const lobby = screen.getByRole('link', { name: 'Jak to działa' });
       await userEvent.setup().click(lobby);
       act(() =>
         notify?.(
@@ -95,9 +98,8 @@ describe('application routing', () => {
     const user = userEvent.setup();
     renderRoute('/login');
     for (const [name, section] of [
-      ['Zadania', 'funkcje'],
-      ['Lobby', 'jak-to-dziala'],
-      ['Ranking', 'jak-to-dziala'],
+      ['Funkcje', 'funkcje'],
+      ['Jak to działa', 'jak-to-dziala'],
       ['Dla prowadzących', 'dla-prowadzacych'],
     ]) {
       const link = within(
@@ -148,7 +150,7 @@ describe('application routing', () => {
     }
   });
 
-  it('keeps section links on the landing route instead of inventing task routes', () => {
+  it('exposes the real lobby route alongside landing section links', () => {
     renderRoute('/tasks');
     expect(
       screen.getByRole('heading', { name: 'Nie znaleziono strony' }),
@@ -156,13 +158,13 @@ describe('application routing', () => {
     const nav = within(
       screen.getByRole('navigation', { name: 'Nawigacja główna' }),
     );
-    expect(nav.getByRole('link', { name: 'Zadania' })).toHaveAttribute(
+    expect(nav.getByRole('link', { name: 'Funkcje' })).toHaveAttribute(
       'href',
       '/',
     );
     expect(nav.getByRole('link', { name: 'Lobby' })).toHaveAttribute(
       'href',
-      '/',
+      '/lobbies',
     );
   });
 
@@ -217,24 +219,28 @@ describe('application routing', () => {
     ).toBeInTheDocument();
   });
 
-  it('explains the unavailable lobby actions without making API calls', async () => {
-    const fetchSpy = vi.spyOn(globalThis, 'fetch');
-    try {
-      const user = userEvent.setup();
-      renderRoute('/');
-      await user.click(screen.getByRole('button', { name: 'Utwórz lobby' }));
-      expect(screen.getByRole('status')).toHaveTextContent(
-        'Tworzenie lobby będzie dostępne w kolejnym etapie.',
-      );
-      await user.click(screen.getByRole('button', { name: 'Dołącz kodem' }));
-      expect(screen.getByRole('status')).toHaveTextContent(
-        'Dołączanie kodem będzie dostępne w kolejnym etapie.',
-      );
-      expect(fetchSpy).not.toHaveBeenCalled();
-    } finally {
-      fetchSpy.mockRestore();
-    }
-  });
+  it.each([
+    ['Utwórz lobby', '/lobbies/new'],
+    ['Dołącz kodem', '/lobbies/join'],
+  ])(
+    'opens %s from the homepage and requests login for visitors',
+    async (label, path) => {
+      const fetchSpy = vi.spyOn(globalThis, 'fetch');
+      try {
+        const user = userEvent.setup();
+        renderRoute('/');
+        const link = screen.getByRole('link', { name: label });
+        expect(link).toHaveAttribute('href', path);
+        await user.click(link);
+        expect(
+          screen.getByRole('heading', { name: 'Logowanie' }),
+        ).toBeVisible();
+        expect(fetchSpy).not.toHaveBeenCalled();
+      } finally {
+        fetchSpy.mockRestore();
+      }
+    },
+  );
 
   it('exposes the editor as an illustration without fake interactive controls', () => {
     renderRoute('/');

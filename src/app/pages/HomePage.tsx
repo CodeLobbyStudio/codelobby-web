@@ -1,13 +1,10 @@
-import { useState } from 'react';
-import { Button } from '../../shared/components/Button';
-import { Alert } from '../../shared/components/Alert';
+import { Link } from 'react-router-dom';
 import { WorkflowJourney } from '../components/WorkflowJourney';
 import { EditorIllustration } from '../components/EditorIllustration';
 import { NeonCode } from '../../shared/components/NeonCode';
 import { LightRibbon } from '../components/LightRibbon';
 
 export function HomePage() {
-  const [notice, setNotice] = useState('');
   return (
     <div className="landing-page">
       <section className="hero-stage glow-divider">
@@ -24,33 +21,19 @@ export function HomePage() {
               CodeLobby to platforma do uczelnianych sesji kodowania na żywo.
             </p>
             <div className="actions">
-              <Button
-                onClick={() =>
-                  setNotice(
-                    'Tworzenie lobby będzie dostępne w kolejnym etapie.',
-                  )
-                }
+              <Link
+                className="codelobby-button button--primary"
+                to="/lobbies/new"
               >
                 Utwórz lobby <span aria-hidden="true">→</span>
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={() =>
-                  setNotice(
-                    'Dołączanie kodem będzie dostępne w kolejnym etapie.',
-                  )
-                }
+              </Link>
+              <Link
+                className="codelobby-button button--secondary"
+                to="/lobbies/join"
               >
                 Dołącz kodem
-              </Button>
+              </Link>
             </div>
-            {notice && (
-              <div className="hero-notice">
-                <Alert title="W przygotowaniu" announce>
-                  {notice}
-                </Alert>
-              </div>
-            )}
           </div>
           <EditorIllustration />
         </div>
@@ -70,14 +53,13 @@ export function HomePage() {
         <article>
           <h2>Automatyczne testy</h2>
           <p>
-            Natychmiastowa weryfikacja rozwiązań na jawnych i ukrytych testach.
+            Uruchamiaj publiczne testy Java i sprawdzaj wynik każdego przypadku.
           </p>
         </article>
-        <article id="ranking">
-          <h2>Ranking rozwiązań</h2>
+        <article>
+          <h2>Edytor projektu</h2>
           <p>
-            Sprawdź, jak wypadasz na tle innych pod względem wydajności i
-            jakości kodu.
+            Otwieraj pliki z drzewa projektu i przełączaj się między zakładkami.
           </p>
         </article>
       </section>
@@ -103,12 +85,12 @@ export function HomePage() {
               <span>nad zajęciami</span>
             </h2>
             <p>
-              Twórz zadania, zarządzaj uczestnikami i śledź postępy w czasie
-              rzeczywistym. Idealne do ćwiczeń, kolokwiów i konkursów.
+              Importuj pliki zadania, zapraszaj uczestników i zarządzaj czasem
+              sesji.
             </p>
-            <a className="button button--primary" href="#jak-to-dziala">
-              Dowiedz się więcej <span aria-hidden="true">→</span>
-            </a>
+            <Link className="codelobby-button button--primary" to="/lobbies">
+              Moje lobby <span aria-hidden="true">→</span>
+            </Link>
           </div>
           <NeonCode />
         </div>

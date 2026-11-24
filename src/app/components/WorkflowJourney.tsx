@@ -19,10 +19,10 @@ export function WorkflowJourney() {
           </span>
           <Icon name="users" />
           <h3>Utwórz lobby</h3>
-          <p>Wybierz zadanie, ustaw czas i zaproś uczestników.</p>
+          <p>Dodaj pliki zadania, ustaw czas i zaproś uczestników.</p>
           <div className="journey-code-chip journey-visual">
             <span>Kod dołączenia</span>
-            <code>7XQ-4F2</code>
+            <code>7XQ4F2AB</code>
           </div>
         </li>
         <li className="journey-step journey-step--code">
@@ -31,13 +31,13 @@ export function WorkflowJourney() {
           </span>
           <Icon name="code" />
           <h3>Koduj w przeglądarce</h3>
-          <p>Pisz i uruchamiaj kod w wybranym języku bez instalacji.</p>
+          <p>Otwórz zadanie i uruchom kod w edytorze Javy.</p>
           <div className="journey-code-example journey-visual">
-            <span>Python 3.11</span>
+            <span>Java 21</span>
             <pre>
               <code>
                 {
-                  'best = cur = 1\nfor a, b in zip(arr, arr[1:]):\n    cur = cur + 1 if b > a else 1\n    best = max(best, cur)'
+                  'int best = 1, cur = 1;\nfor (int i = 1; i < arr.length; i++) {\n    cur = arr[i] > arr[i - 1] ? cur + 1 : 1;\n    best = Math.max(best, cur);\n}'
                 }
               </code>
             </pre>
@@ -75,9 +75,9 @@ export function WorkflowJourney() {
           </span>
           <Icon name="chart" />
           <h3>Zobacz wyniki</h3>
-          <p>Porównaj czas, poprawność i jakość kodu w rankingu lobby.</p>
+          <p>Sprawdź zaliczone przypadki i porównaj wynik z oczekiwanym.</p>
           <span className="journey-finish-label">
-            Sięgnij po pierwsze miejsce
+            Podgląd planowanego rankingu
           </span>
           <div
             className="journey-podium journey-visual"

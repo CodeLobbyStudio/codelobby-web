@@ -87,35 +87,50 @@ export function SiteShell() {
             </span>
           </Link>
           <nav id="main-navigation" aria-label="Nawigacja główna">
+            <NavLink to="/lobbies">
+              <Icon name="lobby" /> Lobby
+            </NavLink>
             {[
-              { label: 'Zadania', icon: 'tasks', section: 'funkcje' },
-              { label: 'Lobby', icon: 'lobby', section: 'jak-to-dziala' },
-              { label: 'Ranking', icon: 'chart', section: 'jak-to-dziala' },
+              { label: 'Funkcje', icon: 'tasks', section: 'funkcje' },
+              {
+                label: 'Jak to działa',
+                icon: 'code',
+                section: 'jak-to-dziala',
+              },
               {
                 label: 'Dla prowadzących',
                 icon: 'teacher',
                 section: 'dla-prowadzacych',
               },
-            ].map(({ label, icon, section }) => (
-              <Link
-                key={label}
-                to="/"
-                replace={pathname === '/'}
-                state={{ section, navigationItem: label }}
-                aria-current={
-                  pathname === '/' &&
-                  isSectionNavigation &&
-                  state?.navigationItem === label &&
-                  (sectionVisibility?.id !== section ||
-                    sectionVisibility.visible)
-                    ? 'location'
-                    : undefined
-                }
-              >
-                <Icon name={icon} />
-                {label}
-              </Link>
-            ))}
+            ].map(({ label, icon, section }) =>
+              import.meta.env.DEV &&
+              status === 'authenticated' &&
+              icon === 'tasks' ? (
+                <NavLink key={label} to="/dev/tasks">
+                  <Icon name={icon} />
+                  Zadania
+                </NavLink>
+              ) : (
+                <Link
+                  key={label}
+                  to="/"
+                  replace={pathname === '/'}
+                  state={{ section, navigationItem: label }}
+                  aria-current={
+                    pathname === '/' &&
+                    isSectionNavigation &&
+                    state?.navigationItem === label &&
+                    (sectionVisibility?.id !== section ||
+                      sectionVisibility.visible)
+                      ? 'location'
+                      : undefined
+                  }
+                >
+                  <Icon name={icon} />
+                  {label}
+                </Link>
+              ),
+            )}
           </nav>
           <div className="header-actions">
             {status === 'authenticated' ? (
@@ -129,10 +144,17 @@ export function SiteShell() {
                 >
                   <Icon name="bell" />
                 </button>
-                <NavLink className="login-link" to="/profile">
+                <NavLink
+                  className="codelobby-button button--secondary account-action"
+                  to="/profile"
+                >
                   Profil
                 </NavLink>
-                <Button variant="secondary" onClick={logout}>
+                <Button
+                  className="account-action"
+                  variant="secondary"
+                  onClick={logout}
+                >
                   Wyloguj się
                 </Button>
               </>
@@ -142,7 +164,7 @@ export function SiteShell() {
                   Zaloguj się
                 </NavLink>
                 <NavLink
-                  className="button button--primary signup-link"
+                  className="codelobby-button button--primary signup-link"
                   to="/register"
                 >
                   Załóż konto

@@ -209,7 +209,7 @@ p {
   text-decoration: none;
   white-space: nowrap;
 }
-.button {
+.codelobby-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -247,7 +247,7 @@ p {
   background: #14212a;
   color: #fff;
 }
-.button:disabled {
+.codelobby-button:disabled {
   background: #29333a;
   border-color: #52606a;
   color: #bdc5cc;
@@ -256,6 +256,12 @@ p {
   padding: 10px 16px;
   font-size: 0.875rem;
   min-height: 44px;
+  white-space: nowrap;
+}
+.header-actions .account-action {
+  min-inline-size: 8rem;
+  flex-shrink: 0;
+  padding-inline: 1rem;
   white-space: nowrap;
 }
 .eyebrow {
@@ -317,7 +323,7 @@ p {
   align-items: center;
   gap: 16px;
 }
-.actions .button {
+.actions .codelobby-button {
   padding-inline: 22px;
 }
 .hero-notice {
@@ -847,7 +853,7 @@ p {
   color: #c7d0d7;
   margin-bottom: 10px;
 }
-.teacher-copy .button {
+.teacher-copy .codelobby-button {
   margin-top: 0;
 }
 .neon-art {
@@ -1021,6 +1027,13 @@ p {
   max-width: 36rem;
   padding-block: clamp(3rem, 6vw, 5rem);
 }
+.session-recovery {
+  display: grid;
+  gap: 1rem;
+}
+.session-recovery > h1 {
+  margin-bottom: 0.5rem;
+}
 .auth-layout--with-art {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -1085,7 +1098,7 @@ p {
 .auth-form {
   margin-top: 24px;
 }
-.auth-form > .button {
+.auth-form > .codelobby-button {
   width: 100%;
 }
 .auth-password-toggle {
@@ -1153,12 +1166,21 @@ p {
   border-right: 1px solid var(--border);
   padding-right: 25px;
 }
+.account-sidebar nav {
+  display: grid;
+  gap: 4px;
+}
 .account-sidebar nav a {
   display: block;
   padding: 10px 14px;
   border-radius: 6px;
+  color: var(--muted);
   text-decoration: none;
   min-height: 44px;
+}
+.account-sidebar nav a:hover {
+  background: var(--surface);
+  color: var(--ink);
 }
 .account-sidebar nav a[aria-current='page'] {
   background: #3d2718;

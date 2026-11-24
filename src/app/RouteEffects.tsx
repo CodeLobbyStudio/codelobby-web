@@ -7,7 +7,15 @@ const titles: Record<string, string> = {
   '/login': 'Logowanie',
   '/register': 'Rejestracja',
   '/profile': 'Profil',
-  ...(import.meta.env.DEV ? { '/dev/workspace': 'Podgląd edytora Java' } : {}),
+  '/lobbies': 'Moje lobby',
+  '/lobbies/new': 'Utwórz lobby',
+  '/lobbies/join': 'Dołącz do lobby',
+  ...(import.meta.env.DEV
+    ? {
+        '/dev/tasks': 'Podgląd katalogu zadań',
+        '/dev/workspace': 'Podgląd edytora Java',
+      }
+    : {}),
 };
 
 export function RouteEffects() {
@@ -25,7 +33,12 @@ export function RouteEffects() {
   }, []);
   useEffect(() => {
     let cancelScroll: (() => void) | undefined;
-    document.title = `${titles[pathname] ?? 'Nie znaleziono strony'} — CodeLobby`;
+    const lobbyTitle = /^\/lobbies\/\d+\/tasks\/\d+$/.test(pathname)
+      ? 'Edytor Java'
+      : /^\/lobbies\/\d+$/.test(pathname)
+        ? 'Lobby'
+        : undefined;
+    document.title = `${titles[pathname] ?? lobbyTitle ?? 'Nie znaleziono strony'} — CodeLobby`;
     if (previousPath.current !== pathname) {
       document.getElementById('main')?.focus();
       window.scrollTo({ top: 0, behavior: 'instant' });

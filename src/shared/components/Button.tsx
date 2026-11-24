@@ -22,7 +22,7 @@ export function Button({
       type={type}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
-      className={`button button--${variant} ${className}`}
+      className={`codelobby-button button--${variant} ${className}`}
     >
       {loading ? loadingLabel : children}
     </button>
